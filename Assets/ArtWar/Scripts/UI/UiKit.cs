@@ -270,6 +270,7 @@ namespace ArtWar
             Shadowed(label);
             // long words shrink to fit rather than breaking onto a second line
             AutoSize(label, Mathf.Min(12, fontSize), fontSize);
+            label.textWrappingMode = TextWrappingModes.NoWrap; // a word never breaks onto a second line
             return button;
         }
 
