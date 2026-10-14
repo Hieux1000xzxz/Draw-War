@@ -176,11 +176,11 @@ namespace ArtWar
         {
             var sheet = MakeSheet(layer, "Title", new Vector2(1240f, 900f));
 
-            var logo = MakeHeading(sheet, "ART WAR", new Vector2(0f, 700f), new Vector2(1240f, 170f), 150, Primary);
+            var logo = MakeHeading(sheet, "DRAW WAR", new Vector2(0f, 700f), new Vector2(1240f, 170f), 150, Primary);
             var shadow = logo.gameObject.AddComponent<Outline>();
             shadow.effectColor = PaperEdge;
             shadow.effectDistance = new Vector2(5f, -5f);
-            MakeHeading(sheet, Loc.T("Vẽ quân  ·  Hóa thật  ·  Phá thành!", "Draw  ·  Summon  ·  Siege!"), new Vector2(0f, 645f), new Vector2(1240f, 50f), 34, InkText);
+            MakeHeading(sheet, Loc.T("Vẽ quân  ·  Hóa thật  ·  Phá thành!", "Draw  ·  Fight  ·  Win!"), new Vector2(0f, 645f), new Vector2(1240f, 50f), 34, InkText);
 
             // a little parade of drawings across the page
             string[] parade = { "Lính khiên", "Robot kiếm", "Rồng", "Xe tăng", "Hồn ma", "Cung thủ" };
