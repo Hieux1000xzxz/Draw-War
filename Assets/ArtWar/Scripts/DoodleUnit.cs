@@ -416,6 +416,7 @@ namespace ArtWar
             lungeTime = 0f;
             rig.Attack();
             float dmg = Stats.damage;
+                case UnitKind.Snake: return Radius + target.Radius + 0.1f + Stats.range; // strikes from a coil
             Vector3 muzzle = transform.position + new Vector3(Facing * Radius * 0.8f, Height * 0.55f, 0f);
             PlayAttackSound();
 
@@ -513,6 +514,26 @@ namespace ArtWar
                             target.TakeDamage(dmg * Counter(target));
                             target.Slow(2.5f);
                         }, new Color(0.95f, 0.98f, 1f));
+                case UnitKind.HorseArcher:
+                    Projectile.Launch(DoodleTemplates.ArrowShot(), 0.35f, muzzle, target.Center, 15f, 0.7f, true,
+                        () => { if (target != null && target.IsAlive) target.TakeDamage(dmg * Counter(target)); });
+                    break;
+
+                case UnitKind.Wizard:
+                {
+                    // a purple magic bolt that bursts where it lands (and finds flying targets too)
+                    Vector3 aim = target.Center;
+                    bool air = target.IsFlying;
+                    Projectile.Launch(DoodleTemplates.Sparkle(), 0.5f, muzzle, aim, 10f, 0.4f, false,
+                        () =>
+                        {
+                            Sfx.Play(Sound.Twinkle, 0.5f, 0.7f);
+                            mgr.DamageArea(this, aim, Stats.splash, dmg, air);
+                        }, new Color(0.7f, 0.45f, 1f));
+                    break;
+                }
+
+                case UnitKind.Snake:
                     break;
 
                 case UnitKind.Grenadier:
@@ -712,6 +733,9 @@ namespace ArtWar
                 case UnitKind.Archer:
                 case UnitKind.Turret: return target.IsFlying ? 2f : 1f;
                 case UnitKind.Jet: return target.IsFlying ? 2f : 1f;
+                case UnitKind.Snake: Sfx.Play(Sound.Swish, 0.4f, 1.8f); break;
+                case UnitKind.Wizard: Sfx.Play(Sound.Twinkle, 0.45f, 1.3f); break;
+                case UnitKind.HorseArcher: Sfx.Play(Sound.Fwip, 0.6f); break;
                 case UnitKind.Plane:
                     return k == UnitKind.Tank ? 2f : k == UnitKind.Wall || k == UnitKind.Turret || k == UnitKind.Robot ? 1.5f : 1f;
                 case UnitKind.Helicopter: return k == UnitKind.Tank ? 1.5f : 1f;
@@ -743,6 +767,9 @@ namespace ArtWar
                         ? 1.3f : 1f;
                 default: return 1f;
             }
+                case UnitKind.Snake: return k == UnitKind.Healer || k == UnitKind.Wizard || k == UnitKind.Rifleman ? 1.4f : 1f;
+                case UnitKind.Wizard: return target.IsFlying || k == UnitKind.Robot || k == UnitKind.Shieldman ? 1.4f : 1f; // magic goes through armour
+                case UnitKind.HorseArcher: return target.IsFlying ? 1.8f : 1f;
         }
 
         // ---------------------------------------------------------------- visuals
@@ -815,7 +842,8 @@ namespace ArtWar
                 {
                     // melee lunges forward, shooters recoil
                     bool melee = Kind == UnitKind.Infantry || Kind == UnitKind.Cavalry || Kind == UnitKind.Dragon || Kind == UnitKind.Robot ||
-                                 Kind == UnitKind.Shieldman || Kind == UnitKind.Ghost || Kind == UnitKind.Bat || Kind == UnitKind.Spider;
+                                 Kind == UnitKind.Shieldman || Kind == UnitKind.Ghost || Kind == UnitKind.Bat || Kind == UnitKind.Spider ||
+                                 Kind == UnitKind.Snake;
                     lunge = Mathf.Sin(k * Mathf.PI) * 0.35f * Facing * (melee ? 1f : -0.4f);
                 }
             }

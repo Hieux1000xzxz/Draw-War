@@ -593,6 +593,9 @@ namespace ArtWar
                             Blend(px, x + y * size, crayon);
                 }
             }
+            { "Phù thủy", Loc.T("Người + MŨ NHỌN hình tam giác trên đầu (thêm gậy phép tùy thích)", "Human + a POINTED triangle hat on the head (a staff if you like)") },
+            { "Rắn", Loc.T("Một nét LƯỢN SÓNG dài sát đất + đầu tròn, không chân", "One long WAVY line along the ground + a round head, no legs") },
+            { "Kỵ cung", Loc.T("Ngựa 4 chân + người cưỡi cầm CUNG (nét cong) và mũi tên", "A 4-legged horse + a rider holding a BOW (a curve) and an arrow") },
 
             // pen lines
             float r = Mathf.Max(1.6f, size / 70f);

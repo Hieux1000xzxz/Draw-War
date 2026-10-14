@@ -240,7 +240,8 @@ namespace ArtWar
                 case UnitKind.Infantry:
                 case UnitKind.Cavalry:
                 case UnitKind.Robot:
-                case UnitKind.Spider: group = 1; depth = 2.5f; break;
+                case UnitKind.Spider:
+                case UnitKind.Snake: group = 1; depth = 2.5f; break;
                 case UnitKind.Tank: group = 2; depth = 3.8f; break;
                 case UnitKind.Plane:
                 case UnitKind.Jet:

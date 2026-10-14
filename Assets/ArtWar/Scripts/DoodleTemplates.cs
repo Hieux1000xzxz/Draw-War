@@ -33,6 +33,9 @@ namespace ArtWar
             ("Nhện", Spider),
             ("Người tuyết", Snowman),
             ("Khinh khí cầu", Balloon),
+            ("Phù thủy", Wizard),
+            ("Rắn", Snake),
+            ("Kỵ cung", HorseArcher),
         };
 
         /// <summary>
@@ -188,6 +191,53 @@ namespace ArtWar
             }
             d.strokes.Add(Line(new Vector2(0.48f, 0.415f), new Vector2(0.47f, 0.34f)));            // feet
             d.strokes.Add(Line(new Vector2(0.52f, 0.415f), new Vector2(0.53f, 0.34f)));
+            return d;
+        }
+
+        /// <summary>Wizard: the fat little soldier in a tall pointed hat with a brim, holding a staff topped with a star.</summary>
+        public static Doodle Wizard(InkColor color)
+        {
+            var d = new Doodle { color = color };
+            FatBody(d, 0.45f);
+            d.strokes.Add(Polyline(true, new Vector2(0.36f, 0.79f), new Vector2(0.58f, 0.79f), new Vector2(0.49f, 0.97f))); // pointed hat
+            d.strokes.Add(Line(new Vector2(0.53f, 0.55f), new Vector2(0.6f, 0.58f)));                                          // arm
+            d.strokes.Add(Line(new Vector2(0.61f, 0.4f), new Vector2(0.67f, 0.76f)));                                          // staff
+            d.strokes.Add(Polyline(true, new Vector2(0.67f, 0.85f), new Vector2(0.69f, 0.8f), new Vector2(0.74f, 0.8f),
+                new Vector2(0.7f, 0.77f), new Vector2(0.72f, 0.72f), new Vector2(0.67f, 0.75f), new Vector2(0.62f, 0.72f),
+                new Vector2(0.64f, 0.77f), new Vector2(0.6f, 0.8f), new Vector2(0.65f, 0.8f)));                                // star
+            return d;
+        }
+
+        /// <summary>Snake: a long wavy body lying along the ground with a round head at the front and a forked tongue.</summary>
+        public static Doodle Snake(InkColor color)
+        {
+            var d = new Doodle { color = color };
+            var body = new Stroke();
+            for (int i = 0; i <= 40; i++)
+            {
+                float t = i / 40f;
+                body.points.Add(new Vector2(Mathf.Lerp(0.12f, 0.74f, t), 0.2f + Mathf.Sin(t * Mathf.PI * 3.5f) * 0.06f));
+            }
+            d.strokes.Add(body);
+            d.strokes.Add(Ellipse(new Vector2(0.8f, 0.27f), 0.07f, 0.055f));                                              // head
+            d.strokes.Add(Polyline(false, new Vector2(0.86f, 0.25f), new Vector2(0.92f, 0.25f), new Vector2(0.95f, 0.28f))); // tongue
+            return d;
+        }
+
+        /// <summary>Horse archer: the knight's horse with a rider drawing a bow instead of a lance.</summary>
+        public static Doodle HorseArcher(InkColor color)
+        {
+            var d = new Doodle { color = color };
+            d.strokes.Add(Ellipse(new Vector2(0.45f, 0.42f), 0.19f, 0.085f));               // horse belly
+            foreach (float x in new[] { 0.31f, 0.38f, 0.52f, 0.59f })
+                d.strokes.Add(Line(new Vector2(x, 0.35f), new Vector2(x + 0.01f, 0.12f)));    // legs
+            d.strokes.Add(Line(new Vector2(0.62f, 0.47f), new Vector2(0.72f, 0.58f)));        // neck
+            d.strokes.Add(Ellipse(new Vector2(0.76f, 0.6f), 0.055f, 0.035f));                 // horse head
+            d.strokes.Add(Line(new Vector2(0.26f, 0.45f), new Vector2(0.17f, 0.35f)));        // tail
+            d.strokes.Add(Ellipse(new Vector2(0.45f, 0.6f), 0.06f, 0.08f));                   // rider
+            d.strokes.Add(Circle(new Vector2(0.46f, 0.74f), 0.045f));                         // rider head
+            d.strokes.Add(Arc(new Vector2(0.55f, 0.66f), 0.1f, 0.13f, -70f, 70f));            // bow
+            d.strokes.Add(Line(new Vector2(0.46f, 0.66f), new Vector2(0.72f, 0.66f)));        // arrow
             return d;
         }
 

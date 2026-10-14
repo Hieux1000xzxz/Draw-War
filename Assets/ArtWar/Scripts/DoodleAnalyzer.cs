@@ -4,10 +4,10 @@ using UnityEngine;
 namespace ArtWar
 {
     public enum UnitKind { Infantry, Cavalry, Archer, Healer, Wall, Turret, Tank, Plane, Jet, Helicopter, Dragon, Rifleman, Robot, Shieldman, Ghost,
-        Grenadier, Catapult, Bat, Spider, Snowman, Balloon }
+        Grenadier, Catapult, Bat, Spider, Snowman, Balloon, Wizard, Snake, HorseArcher }
 
     /// <summary>What a single stroke was recognized as.</summary>
-    public enum PartType { None, Leg, Weapon, Shield, Wheel, Wing, Bow, Rotor, Propeller, Cross, Gun, Box, Guard, Bomb }
+    public enum PartType { None, Leg, Weapon, Shield, Wheel, Wing, Bow, Rotor, Propeller, Cross, Gun, Box, Guard, Bomb, Hat, Coil }
 
     /// <summary>The body the player chooses to draw; the weapon they add then decides the exact unit.</summary>
     public enum Model { Human, Robot, Dragon, Tank, Aircraft, Fort, Ghost }
@@ -28,7 +28,7 @@ namespace ArtWar
         public bool flying;
         public float inkCost;
         public float size;
-        public int legs, weapons, shields, wheels, wings, bows, rotors, propellers, crosses, guns, boxes, guards, bombs;
+        public int legs, weapons, shields, wheels, wings, bows, rotors, propellers, crosses, guns, boxes, guards, bombs, hats, coils;
         public int steepWeapons; // weapons raised steeply (a catapult arm rather than a level barrel)
         public int closedShapes; // closed outlines: body, head, tail, belly... (a real dragon has several)
         public int outerWeapons; // weapons and bows sticking out of the main body (not lines drawn inside it)
@@ -37,7 +37,7 @@ namespace ArtWar
 
         public bool HitsAir => kind == UnitKind.Archer || kind == UnitKind.Turret || kind == UnitKind.Dragon ||
                                kind == UnitKind.Jet || kind == UnitKind.Helicopter || kind == UnitKind.Rifleman ||
-                               kind == UnitKind.Bat || (kind == UnitKind.Robot && robotMode == RobotMode.Flyer);
+                               kind == UnitKind.Bat || kind == UnitKind.Wizard || kind == UnitKind.HorseArcher || (kind == UnitKind.Robot && robotMode == RobotMode.Flyer);
 
         public bool Stationary => kind == UnitKind.Wall || kind == UnitKind.Turret;
     }
@@ -74,6 +74,9 @@ namespace ArtWar
                 case UnitKind.Spider: return Loc.T("NHỆN", "SPIDER");
                 case UnitKind.Snowman: return Loc.T("NGƯỜI TUYẾT", "SNOWMAN");
                 case UnitKind.Balloon: return Loc.T("KHINH KHÍ CẦU", "HOT-AIR BALLOON");
+                case UnitKind.Wizard: return Loc.T("PHÙ THỦY", "WIZARD");
+                case UnitKind.Snake: return Loc.T("RẮN", "SNAKE");
+                case UnitKind.HorseArcher: return Loc.T("KỴ CUNG", "HORSE ARCHER");
                 default: return Loc.T("BỘ BINH", "SOLDIER");
             }
         }
@@ -102,6 +105,9 @@ namespace ArtWar
                 case UnitKind.Spider: return Loc.T("Bò cực nhanh, cắn độc làm địch chậm lại. Vẽ đẹp ra cả bầy", "Scuttles fast; its venom slows enemies down. Draw well for a swarm");
                 case UnitKind.Snowman: return Loc.T("Ném cầu tuyết từ xa làm địch chậm lại. Rất trâu", "Throws snowballs that slow enemies down. Very tough");
                 case UnitKind.Balloon: return Loc.T("Bay chậm, thả bom nổ lan. Trâu nhưng sợ cung thủ", "Drifts slowly, drops bombs. Tough, but archers bring it down");
+                case UnitKind.Wizard: return Loc.T("Bắn cầu phép tím nổ nhẹ, trúng cả lính bay. Ít máu", "Casts purple magic bolts that burst a little and hit fliers. Fragile");
+                case UnitKind.Snake: return Loc.T("Trườn nhanh sát đất, mổ độc làm địch chậm lại", "Slithers fast along the ground; its venomous bite slows enemies");
+                case UnitKind.HorseArcher: return Loc.T("Phi ngựa nhanh, bắn tên từ xa, khắc lính bay", "Rides fast and shoots arrows from afar. Beats fliers");
                 default: return Loc.T("Đánh gần. Khắc cung thủ, thầy thuốc", "Melee. Beats archers and medics");
             }
         }
@@ -182,6 +188,9 @@ namespace ArtWar
                 case UnitKind.Spider: return Loc.T("Răng độc", "Venom fangs");
                 case UnitKind.Snowman: return Loc.T("Cầu tuyết", "Snowballs");
                 case UnitKind.Balloon: return Loc.T("Bom", "Bombs");
+                case UnitKind.Wizard: return Loc.T("Cầu phép", "Magic bolts");
+                case UnitKind.Snake: return Loc.T("Nanh độc", "Venom fangs");
+                case UnitKind.HorseArcher: return Loc.T("Ngựa + cung", "Horse + bow");
                 case UnitKind.Robot:
                     switch (s.robotMode)
                     {
@@ -245,7 +254,8 @@ namespace ArtWar
                 case Model.Ghost: return UnitKind.Ghost;
                 default:
                     if (s.crosses > 0) return UnitKind.Healer;
-                    if (s.bows > 0) return UnitKind.Archer;
+                    if (s.bows > 0) return s.legs >= 4 ? UnitKind.HorseArcher : UnitKind.Archer;
+                    if (s.hats > 0 && s.legs < 4) return UnitKind.Wizard;
                     if (s.legs >= 4) return UnitKind.Cavalry;
                     if (s.guards > 0) return UnitKind.Shieldman;
                     if (s.bombs > 0) return UnitKind.Grenadier;
@@ -324,6 +334,28 @@ namespace ArtWar
             return 0;
         }
 
+        /// <summary>
+        /// A snake's body: one long open line lying low and wide across the drawing that waves up and down at least
+        /// three times (a straight stick, a bow or a wing never does).
+        /// </summary>
+        static bool IsCoil(Stroke s, Rect sb, Rect b, float size)
+        {
+            if (sb.width < size * 0.45f || sb.height > sb.width * 0.5f || sb.center.y > b.yMin + b.height * 0.55f) return false;
+            float bump = Mathf.Max(sb.height * 0.2f, 0.01f);
+            int turns = 0, dir = 0;
+            float last = s.points[0].y;
+            foreach (var p in s.points)
+            {
+                float dy = p.y - last;
+                if (Mathf.Abs(dy) < bump) continue;
+                int d = dy > 0f ? 1 : -1;
+                if (dir != 0 && d != dir) turns++;
+                dir = d;
+                last = p.y;
+            }
+            return turns >= 3;
+        }
+
         public static bool IsClosed(Stroke s)
         {
             int n = s.points.Count;
@@ -365,6 +397,9 @@ namespace ArtWar
                 }
 
                 Vector2 delta = end - start;
+
+                // a long wavy line lying low across the drawing: a snake's body
+                if (IsCoil(s, sb, b, size)) { parts[i] = PartType.Coil; continue; }
                 if (straightness > 0.85f)
                 {
                     bool vertical = Mathf.Abs(delta.y) > Mathf.Abs(delta.x);
@@ -449,6 +484,12 @@ namespace ArtWar
                 {
                     if (parts[i] != PartType.Shield && parts[i] != PartType.Box) continue;
                     var sb = StrokeBounds(doodle.strokes[i].points);
+                    // a pointed hat on top: a closed shape with three sharp corners up at the very top
+                    if (sb.center.y > b.yMax - h * 0.28f && CountCorners(doodle.strokes[i].points) == 3)
+                    {
+                        parts[i] = PartType.Hat;
+                        continue;
+                    }
                     bool inFront = sb.center.x >= legsX + w * 0.07f;
                     bool bigEnough = sb.height >= h * 0.22f;
                     bool isHead = sb.center.y > b.yMax - h * 0.3f && Mathf.Max(sb.width, sb.height) < size * 0.3f;
@@ -557,6 +598,8 @@ namespace ArtWar
                     case PartType.Box: stats.boxes++; stats.shields++; break;
                     case PartType.Guard: stats.guards++; stats.shields++; break;
                     case PartType.Bomb: stats.bombs++; break;
+                    case PartType.Hat: stats.hats++; break;
+                    case PartType.Coil: stats.coils++; break;
                 }
             }
 
@@ -569,6 +612,7 @@ namespace ArtWar
 
             if (stats.rotors > 0) stats.kind = UnitKind.Helicopter;
             else if (robotBody) stats.kind = UnitKind.Robot; // a boxy body wins over wings (a flying robot is still a robot)
+            else if (stats.coils > 0 && stats.legs == 0 && stats.wheels == 0) stats.kind = UnitKind.Snake; // a forked tongue may read as a little wing
             else if (ghost) stats.kind = UnitKind.Ghost; // one sheet with a wavy hem (its waving arms are not wings)
             else if (stack == 2) stats.kind = UnitKind.Balloon;
             else if (stack == 1) stats.kind = UnitKind.Snowman;
@@ -580,7 +624,8 @@ namespace ArtWar
             else if (stats.guards > 0 && stats.legs > 0 && stats.legs < 4) stats.kind = UnitKind.Shieldman;
             else if (stats.legs == 0)
                 stats.kind = stats.outerWeapons > 0 ? UnitKind.Turret : UnitKind.Wall;
-            else if (stats.bows > 0) stats.kind = UnitKind.Archer;
+            else if (stats.bows > 0) stats.kind = stats.legs >= 4 ? UnitKind.HorseArcher : UnitKind.Archer; // a bow on horseback
+            else if (stats.hats > 0 && stats.legs < 4) stats.kind = UnitKind.Wizard; // a pointed hat makes a wizard
             else if (stats.legs >= 6) stats.kind = UnitKind.Spider; // six or more legs: a creepy-crawly, not a horse
             else if (stats.legs >= 4) stats.kind = UnitKind.Cavalry;
             else if (stats.bombs > 0) stats.kind = UnitKind.Grenadier;
@@ -735,6 +780,30 @@ namespace ArtWar
                     stats.range = 8.5f;
                     stats.splash = 1.4f;
                     stats.attackInterval = 3.5f;
+                    break;
+                case UnitKind.Wizard:
+                    // a fragile caster whose bolts burst a little and reach the sky
+                    stats.maxHp *= 0.75f;
+                    stats.damage = 10f + stats.size * 10f;
+                    stats.range = 5f;
+                    stats.splash = 0.7f;
+                    stats.attackInterval = 1.5f;
+                    break;
+                case UnitKind.Snake:
+                    // slithers fast and low, bites from a little way off with slowing venom
+                    stats.maxHp *= 1.1f;
+                    stats.damage *= 1.1f;
+                    stats.speed = 2.2f;
+                    stats.range = 0.5f;
+                    stats.attackInterval = 0.8f;
+                    break;
+                case UnitKind.HorseArcher:
+                    // an archer on horseback: quick, shoots on the move
+                    stats.maxHp *= 1.1f;
+                    stats.damage *= 0.85f;
+                    stats.speed *= 1.6f;
+                    stats.range = 5f;
+                    stats.attackInterval *= 1.2f;
                     break;
                 case UnitKind.Spider:
                     // a fast little biter whose venom slows its victim
