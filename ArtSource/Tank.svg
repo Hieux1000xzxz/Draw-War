@@ -1,0 +1,236 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="512" height="512" viewBox="0 0 512 512">
+  <defs>
+    <linearGradient id="hullSide" x1="0" y1="0" x2="0.25" y2="1">
+      <stop offset="0" stop-color="#858450"/>
+      <stop offset="0.45" stop-color="#666539"/>
+      <stop offset="1" stop-color="#3d3d23"/>
+    </linearGradient>
+    <linearGradient id="glacis" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#a3a268"/>
+      <stop offset="0.5" stop-color="#7a7944"/>
+      <stop offset="1" stop-color="#4d4d2b"/>
+    </linearGradient>
+    <linearGradient id="fenderG" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#a3a26a"/>
+      <stop offset="0.4" stop-color="#6c6b3b"/>
+      <stop offset="1" stop-color="#3b3b22"/>
+    </linearGradient>
+    <linearGradient id="turretG" x1="0.15" y1="0" x2="0.5" y2="1">
+      <stop offset="0" stop-color="#a5a46a"/>
+      <stop offset="0.35" stop-color="#7a7943"/>
+      <stop offset="0.8" stop-color="#55552f"/>
+      <stop offset="1" stop-color="#404026"/>
+    </linearGradient>
+    <linearGradient id="trackG" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#4e4a40"/>
+      <stop offset="0.5" stop-color="#34312b"/>
+      <stop offset="1" stop-color="#1f1d1a"/>
+    </linearGradient>
+    <radialGradient id="wheelG" cx="0.36" cy="0.32" r="0.75">
+      <stop offset="0" stop-color="#9b9a63"/>
+      <stop offset="0.55" stop-color="#626237"/>
+      <stop offset="1" stop-color="#34341e"/>
+    </radialGradient>
+    <radialGradient id="tireG" cx="0.4" cy="0.35" r="0.7">
+      <stop offset="0" stop-color="#55514a"/>
+      <stop offset="1" stop-color="#1d1b18"/>
+    </radialGradient>
+    <radialGradient id="hubG" cx="0.35" cy="0.3" r="0.8">
+      <stop offset="0" stop-color="#c2bf88"/>
+      <stop offset="1" stop-color="#4c4c2a"/>
+    </radialGradient>
+    <linearGradient id="barrelG" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#55552f"/>
+      <stop offset="0.28" stop-color="#b0af74"/>
+      <stop offset="0.55" stop-color="#6c6b3b"/>
+      <stop offset="1" stop-color="#363620"/>
+    </linearGradient>
+    <linearGradient id="steelG" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#4b4a40"/>
+      <stop offset="0.3" stop-color="#9a978a"/>
+      <stop offset="1" stop-color="#2d2b26"/>
+    </linearGradient>
+    <linearGradient id="canG" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#9a9858"/>
+      <stop offset="0.5" stop-color="#6a6939"/>
+      <stop offset="1" stop-color="#3b3b21"/>
+    </linearGradient>
+    <linearGradient id="woodG" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#b08655"/>
+      <stop offset="1" stop-color="#5e4127"/>
+    </linearGradient>
+    <linearGradient id="mudG" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#6a5638" stop-opacity="0"/>
+      <stop offset="1" stop-color="#4f3e29" stop-opacity="0.95"/>
+    </linearGradient>
+    <linearGradient id="dustG" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#a08a62" stop-opacity="0"/>
+      <stop offset="1" stop-color="#a08a62" stop-opacity="0.55"/>
+    </linearGradient>
+    <radialGradient id="litSpot" cx="0.3" cy="0.2" r="0.6">
+      <stop offset="0" stop-color="#e2e0a8" stop-opacity="0.35"/>
+      <stop offset="1" stop-color="#e2e0a8" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+
+  <g stroke="#1c1712" stroke-width="4" stroke-linejoin="round" stroke-linecap="round">
+
+    <!-- antenna (behind) -->
+    <path d="M134,318 L112,210" fill="none" stroke-width="3.5"/>
+    <path d="M134,318 L112,210" fill="none" stroke="#8a8770" stroke-width="1.4"/>
+
+    <!-- ===== Gun barrel ===== -->
+    <path d="M360,308.5 L472,310.5 L472,327 L360,330 Z" fill="url(#barrelG)"/>
+    <path d="M370,315.5 L466,316.5" fill="none" stroke="#d6d59c" stroke-width="2" stroke-opacity="0.75"/>
+    <rect x="404" y="309" width="12" height="20" rx="3" fill="url(#barrelG)" stroke-width="3.5"/>
+    <!-- muzzle brake -->
+    <path d="M468,305 L502,305 Q507,305 507,310 L507,328 Q507,333 502,333 L468,333 Z" fill="url(#barrelG)"/>
+    <rect x="478" y="312" width="9" height="14" rx="2" fill="#1c1712" stroke="none"/>
+    <rect x="491" y="312" width="9" height="14" rx="2" fill="#1c1712" stroke="none"/>
+    <path d="M471,309 L503,309" fill="none" stroke="#dcdaa2" stroke-width="2" stroke-opacity="0.65"/>
+
+    <!-- ===== Hull ===== -->
+    <path d="M34,368 L58,352 L372,352 L454,404 L456,418 L32,418 Z" fill="url(#hullSide)"/>
+    <!-- sloped glacis facet -->
+    <path d="M372,352 L454,404 L456,418 L428,418 L364,358 Z" fill="url(#glacis)"/>
+    <!-- rear plate facet -->
+    <path d="M34,368 L58,352 L62,356 L44,372 L44,418 L32,418 Z" fill="#45452a" stroke="none"/>
+    <!-- deck lit edge -->
+    <path d="M40,366 L60,355 L370,355" fill="none" stroke="#c4c38a" stroke-width="3" stroke-opacity="0.85"/>
+    <path d="M378,358 L448,403" fill="none" stroke="#d0cf96" stroke-width="2.5" stroke-opacity="0.7"/>
+    <!-- plate seams -->
+    <path d="M130,360 L130,414 M262,360 L262,414" fill="none" stroke="#28271a" stroke-width="2.5" stroke-opacity="0.85"/>
+    <path d="M132,361 L132,413 M264,361 L264,413" fill="none" stroke="#b1b07a" stroke-width="1.5" stroke-opacity="0.5"/>
+    <!-- driver vision block -->
+    <path d="M384,370 L404,382 L400,388 L380,376 Z" fill="#23211b" stroke-width="3"/>
+    <!-- spare track links on glacis -->
+    <g fill="url(#trackG)" stroke-width="2.5">
+      <path d="M408,382 L420,390 L414,399 L402,391 Z"/>
+      <path d="M421,390 L433,398 L427,407 L415,399 Z"/>
+      <path d="M434,398 L446,406 L441,414 L429,406 Z"/>
+    </g>
+    <!-- headlight -->
+    <path d="M440,384 L456,390 L454,402 L438,396 Z" fill="url(#steelG)" stroke-width="3"/>
+    <!-- exhaust -->
+    <rect x="18" y="382" width="22" height="14" rx="4" fill="url(#steelG)" stroke-width="3"/>
+    <path d="M21,389 L37,389" fill="none" stroke="#7a5532" stroke-width="3" stroke-opacity="0.8"/>
+
+    <!-- shovel + pick on hull side -->
+    <path d="M146,370 L236,370" fill="none" stroke="#1c1712" stroke-width="9"/>
+    <path d="M146,370 L236,370" fill="none" stroke="url(#woodG)" stroke-width="5"/>
+    <path d="M232,362 L256,362 Q265,370 256,378 L232,378 Z" fill="url(#steelG)" stroke-width="3"/>
+    <rect x="166" y="364" width="6" height="12" fill="#3a3a24" stroke-width="2"/>
+    <rect x="212" y="364" width="6" height="12" fill="#3a3a24" stroke-width="2"/>
+    <!-- tow cable -->
+    <path d="M276,374 Q312,388 346,376 Q370,370 384,392" fill="none" stroke="#1c1712" stroke-width="7"/>
+    <path d="M276,374 Q312,388 346,376 Q370,370 384,392" fill="none" stroke="#878270" stroke-width="3" stroke-dasharray="3 3" stroke-linecap="butt"/>
+
+    <!-- rivets -->
+    <g fill="#a8a76e" stroke="#2a2818" stroke-width="1.5">
+      <circle cx="68" cy="362" r="2.6"/><circle cx="92" cy="362" r="2.6"/><circle cx="116" cy="362" r="2.6"/>
+      <circle cx="146" cy="398" r="2.6"/><circle cx="170" cy="398" r="2.6"/><circle cx="194" cy="398" r="2.6"/><circle cx="218" cy="398" r="2.6"/><circle cx="242" cy="398" r="2.6"/>
+      <circle cx="278" cy="398" r="2.6"/><circle cx="302" cy="398" r="2.6"/><circle cx="326" cy="398" r="2.6"/><circle cx="350" cy="398" r="2.6"/>
+      <circle cx="68" cy="406" r="2.6"/><circle cx="92" cy="406" r="2.6"/><circle cx="116" cy="406" r="2.6"/>
+    </g>
+
+    <!-- jerry can on rear -->
+    <path d="M52,376 Q52,370 58,370 L84,370 Q90,370 90,376 L90,412 Q90,416 86,416 L56,416 Q52,416 52,412 Z" fill="url(#canG)" stroke-width="3.5"/>
+    <path d="M58,378 L84,408 M84,378 L58,408" fill="none" stroke="#3a3a20" stroke-width="3.5"/>
+    <path d="M58,378 L84,408 M84,378 L58,408" fill="none" stroke="#a9a86d" stroke-width="1.2" stroke-opacity="0.6" transform="translate(-1,-1)"/>
+    <path d="M58,370 L58,362 L74,362 L74,370" fill="none" stroke-width="3"/>
+    <rect x="78" y="363" width="7" height="7" rx="1.5" fill="url(#steelG)" stroke-width="2"/>
+    <path d="M56,374 L70,373" fill="none" stroke="#d6d49c" stroke-width="2" stroke-opacity="0.75"/>
+
+    <!-- dust on lower hull -->
+    <path d="M32,394 L456,394 L456,418 L32,418 Z" fill="url(#dustG)" stroke="none"/>
+
+    <!-- fender -->
+    <path d="M16,416 L460,416 L466,428 L12,428 Z" fill="url(#fenderG)" stroke-width="3.5"/>
+    <path d="M19,418.5 L458,418.5" fill="none" stroke="#c7c68e" stroke-width="2" stroke-opacity="0.75"/>
+
+    <!-- ===== Tracks ===== -->
+    <path d="M56,430 L420,430 Q458,432 460,458 Q460,480 434,497 L412,500 L84,500 Q34,498 26,462 Q28,432 56,430 Z" fill="url(#trackG)"/>
+    <!-- track shadow under fender -->
+    <path d="M30,432 L456,432 L456,440 L28,440 Z" fill="#110f0c" stroke="none" opacity="0.55"/>
+    <!-- link plates -->
+    <path d="M58,434 L418,434 Q453,436 455,458 Q455,477 431,492 L411,495 L86,495 Q40,493 31,462 Q33,436 58,434 Z" fill="none" stroke="#77715f" stroke-width="6" stroke-dasharray="5 6" stroke-linecap="butt"/>
+    <path d="M58,434 L418,434 Q453,436 455,458 Q455,477 431,492 L411,495 L86,495 Q40,493 31,462 Q33,436 58,434 Z" fill="none" stroke="#a49d86" stroke-width="2" stroke-dasharray="5 6" stroke-linecap="butt" stroke-opacity="0.5" transform="translate(-0.5,-1.5)"/>
+
+    <!-- drive sprocket (front) -->
+    <circle cx="428" cy="458" r="25" fill="url(#tireG)"/>
+    <circle cx="428" cy="458" r="21" fill="none" stroke="#857e69" stroke-width="5" stroke-dasharray="5 5" stroke-linecap="butt"/>
+    <circle cx="428" cy="458" r="15" fill="url(#wheelG)" stroke-width="3"/>
+    <circle cx="428" cy="458" r="5" fill="url(#hubG)" stroke-width="2"/>
+    <!-- idler (rear) -->
+    <circle cx="54" cy="462" r="23" fill="url(#tireG)"/>
+    <circle cx="54" cy="462" r="15" fill="url(#wheelG)" stroke-width="3"/>
+    <circle cx="54" cy="462" r="5" fill="url(#hubG)" stroke-width="2"/>
+
+    <!-- road wheels -->
+    <g id="w">
+      <circle cx="104" cy="471" r="26" fill="url(#tireG)"/>
+      <circle cx="104" cy="471" r="19" fill="url(#wheelG)" stroke-width="3"/>
+      <circle cx="104" cy="471" r="7" fill="url(#hubG)" stroke-width="2.5"/>
+      <g fill="#2a2818" stroke="none"><circle cx="104" cy="460" r="1.8"/><circle cx="114" cy="474" r="1.8"/><circle cx="94" cy="474" r="1.8"/></g>
+      <path d="M91,462 A15,15 0 0 1 106,455" fill="none" stroke="#d2d199" stroke-width="2.2" stroke-opacity="0.6"/>
+    </g>
+    <use xlink:href="#w" x="56"/>
+    <use xlink:href="#w" x="112"/>
+    <use xlink:href="#w" x="168"/>
+    <use xlink:href="#w" x="224"/>
+    <use xlink:href="#w" x="280"/>
+    <!-- mud on running gear -->
+    <path d="M26,468 Q60,486 110,488 Q200,494 300,486 Q380,494 458,470 Q456,484 434,497 L412,500 L84,500 Q36,498 26,468 Z" fill="url(#mudG)" stroke="none"/>
+    <g fill="#5d4a31" stroke="none" opacity="0.75">
+      <ellipse cx="96" cy="492" rx="12" ry="4"/><ellipse cx="190" cy="494" rx="16" ry="4"/><ellipse cx="270" cy="493" rx="10" ry="3.5"/><ellipse cx="350" cy="494" rx="14" ry="4"/>
+    </g>
+
+    <!-- ===== Turret ===== -->
+    <!-- rear stowage bin -->
+    <path d="M116,312 L152,312 L148,348 L120,348 Q112,348 112,342 L112,318 Q112,312 116,312 Z" fill="url(#hullSide)"/>
+    <path d="M114,324 L150,324" fill="none" stroke="#2b2a1a" stroke-width="2"/>
+    <path d="M118,315 L146,315" fill="none" stroke="#c4c38a" stroke-width="2" stroke-opacity="0.6"/>
+    <!-- turret body -->
+    <path d="M142,354 L154,306 Q158,294 172,293 L318,290 Q332,290 340,302 L358,332 L358,354 Z" fill="url(#turretG)"/>
+    <path d="M142,354 L154,306 Q158,294 172,293 L318,290 Q332,290 340,302 L358,332 L358,354 Z" fill="url(#litSpot)" stroke="none"/>
+    <path d="M158,306 Q162,298 174,298 L316,295 Q328,296 334,304" fill="none" stroke="#d3d29a" stroke-width="3" stroke-opacity="0.8"/>
+    <!-- turret ring shadow -->
+    <path d="M144,344 L358,344 L358,354 L142,354 Z" fill="#2c2c19" stroke="none" opacity="0.6"/>
+    <path d="M60,356 L372,356" fill="none" stroke="#1c1712" stroke-width="3" stroke-opacity="0.6"/>
+    <!-- side hatch -->
+    <path d="M228,304 L266,304 Q270,304 270,308 L270,330 Q270,334 266,334 L228,334 Q224,334 224,330 L224,308 Q224,304 228,304 Z" fill="url(#turretG)" stroke-width="3"/>
+    <path d="M228,307 L266,307" fill="none" stroke="#d3d29a" stroke-width="1.6" stroke-opacity="0.6"/>
+    <rect x="240" y="316" width="14" height="5" rx="2" fill="#2a2818" stroke="none"/>
+    <circle cx="196" cy="320" r="5" fill="#23211a" stroke-width="2.5"/>
+    <!-- turret rivets -->
+    <g fill="#b2b177" stroke="#2a2818" stroke-width="1.5">
+      <circle cx="170" cy="306" r="2.4"/><circle cx="200" cy="302" r="2.4"/><circle cx="296" cy="300" r="2.4"/><circle cx="324" cy="306" r="2.4"/>
+      <circle cx="164" cy="336" r="2.4"/><circle cx="300" cy="336" r="2.4"/><circle cx="330" cy="336" r="2.4"/>
+      <circle cx="229" cy="309" r="1.7"/><circle cx="265" cy="309" r="1.7"/><circle cx="229" cy="329" r="1.7"/><circle cx="265" cy="329" r="1.7"/>
+    </g>
+    <!-- mantlet -->
+    <path d="M340,298 L362,296 Q380,300 380,320 Q380,340 362,344 L342,342 Z" fill="url(#turretG)"/>
+    <path d="M348,303 Q368,302 373,316" fill="none" stroke="#dcdba2" stroke-width="2.5" stroke-opacity="0.75"/>
+    <circle cx="354" cy="305" r="2.2" fill="#b2b177" stroke-width="1.5"/>
+    <circle cx="354" cy="336" r="2.2" fill="#b2b177" stroke-width="1.5"/>
+    <rect x="376" y="333" width="18" height="5" rx="2" fill="url(#steelG)" stroke-width="2.5"/>
+
+    <!-- commander cupola -->
+    <path d="M174,294 L178,272 Q180,266 188,266 L216,266 Q224,266 226,272 L230,293 Z" fill="url(#turretG)"/>
+    <g fill="#1f1d17" stroke="none">
+      <rect x="184" y="276" width="7" height="5" rx="1"/><rect x="198" y="276" width="7" height="5" rx="1"/><rect x="212" y="276" width="7" height="5" rx="1"/>
+    </g>
+    <path d="M172,266 Q202,254 232,266 L232,270 L172,270 Z" fill="url(#fenderG)" stroke-width="3"/>
+    <path d="M182,263 Q202,258 222,263" fill="none" stroke="#d6d59c" stroke-width="2" stroke-opacity="0.7"/>
+    <!-- loader hatch -->
+    <path d="M262,291 Q264,281 278,281 L292,281 Q300,283 302,291 Z" fill="url(#turretG)" stroke-width="3"/>
+
+    <!-- ===== Weathering ===== -->
+    <g fill="none">
+      <path d="M176,340 L177,352 M214,338 L213,352 M304,338 L306,352" stroke="#3b3320" stroke-width="2" stroke-opacity="0.45"/>
+      <path d="M70,370 L71,394 M150,382 L151,410 M282,386 L284,410 M362,384 L364,410" stroke="#3b3320" stroke-width="2.5" stroke-opacity="0.35"/>
+      <path d="M96,355 l7,0 M300,355 l9,0 M396,366 l5,4 M188,268 l6,-1 M346,312 l2,6 M318,293 l6,0 M24,420 l8,0 M300,420 l10,0" stroke="#e6e4ae" stroke-width="2" stroke-opacity="0.7"/>
+      <path d="M158,406 l5,1 M232,408 l4,0 M318,410 l5,-1 M418,410 l4,2 M190,344 l6,0" stroke="#2a2316" stroke-width="3" stroke-opacity="0.5"/>
+    </g>
+  </g>
+</svg>

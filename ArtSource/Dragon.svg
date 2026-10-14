@@ -1,0 +1,183 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="512" height="512" viewBox="0 0 512 512">
+  <defs>
+    <linearGradient id="scale" gradientUnits="userSpaceOnUse" x1="200" y1="180" x2="240" y2="360">
+      <stop offset="0" stop-color="#a3a85e"/>
+      <stop offset="0.45" stop-color="#717a3a"/>
+      <stop offset="1" stop-color="#363c1c"/>
+    </linearGradient>
+    <linearGradient id="scaleFar" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#5a6230"/>
+      <stop offset="1" stop-color="#2a2e16"/>
+    </linearGradient>
+    <linearGradient id="limb" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#9aa058"/>
+      <stop offset="1" stop-color="#454c22"/>
+    </linearGradient>
+    <radialGradient id="sheen" cx="0.5" cy="0.5" r="0.5">
+      <stop offset="0" stop-color="#d8c47a" stop-opacity="0.7"/>
+      <stop offset="1" stop-color="#d8c47a" stop-opacity="0"/>
+    </radialGradient>
+    <linearGradient id="belly" gradientUnits="userSpaceOnUse" x1="0" y1="190" x2="0" y2="340">
+      <stop offset="0" stop-color="#e2c88a"/>
+      <stop offset="1" stop-color="#9a7a44"/>
+    </linearGradient>
+    <linearGradient id="memb" gradientUnits="userSpaceOnUse" x1="80" y1="30" x2="240" y2="280">
+      <stop offset="0" stop-color="#b89a62"/>
+      <stop offset="0.55" stop-color="#8a7044"/>
+      <stop offset="1" stop-color="#5a4628"/>
+    </linearGradient>
+    <linearGradient id="membFar" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#6e5a38"/>
+      <stop offset="1" stop-color="#3a2e1c"/>
+    </linearGradient>
+    <linearGradient id="bone" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#f0e6c8"/>
+      <stop offset="1" stop-color="#8c7c58"/>
+    </linearGradient>
+    <linearGradient id="mouth" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#6a2a1e"/>
+      <stop offset="1" stop-color="#2a0e0a"/>
+    </linearGradient>
+    <radialGradient id="eye" cx="0.4" cy="0.4" r="0.6">
+      <stop offset="0" stop-color="#fff2a0"/>
+      <stop offset="1" stop-color="#d08a1c"/>
+    </radialGradient>
+    <pattern id="scalePat" width="14" height="10" patternUnits="userSpaceOnUse">
+      <path d="M0,10 A7,7 0 0 1 14,10 M-7,5 A7,7 0 0 1 7,5 M7,5 A7,7 0 0 1 21,5" fill="none" stroke="#1e220e" stroke-width="1.1" opacity="0.45"/>
+    </pattern>
+    <path id="bodyShape" d="M405,160 C380,170 355,195 335,222 C300,240 240,250 190,262 C160,268 140,282 120,295 C85,312 55,335 40,365 C28,392 38,420 64,430 L88,432 C64,420 56,400 64,380 C74,358 100,340 135,330 C180,340 230,345 280,335 C330,325 370,305 385,275 C400,245 420,215 435,192 L420,188 Z"/>
+  </defs>
+
+  <g transform="translate(10 40) scale(0.95)" stroke="#1c1712" stroke-width="4" stroke-linejoin="round" stroke-linecap="round">
+
+    <!-- ===== FAR WING ===== -->
+    <path fill="url(#membFar)" d="M355,30 L332,-28 C316,-6 290,-8 258,-24 C258,0 242,12 212,10 C222,90 236,170 246,238 L322,228 L366,140 Z"/>
+    <g fill="none" stroke="#2a2016" stroke-width="1.5" opacity="0.7">
+      <path d="M330,150 C320,100 310,50 300,0 M300,200 C280,140 260,80 240,20"/>
+    </g>
+    <g fill="none" stroke-width="7">
+      <path d="M355,30 L332,-28 M355,30 C320,10 290,-8 258,-24 M355,30 C300,20 250,14 212,10"/>
+    </g>
+    <g fill="none" stroke="#8a7a58" stroke-width="3">
+      <path d="M355,30 L332,-28 M355,30 C320,10 290,-8 258,-24 M355,30 C300,20 250,14 212,10"/>
+    </g>
+    <path fill="url(#scaleFar)" d="M314,232 C330,200 350,170 360,140 C366,104 360,64 352,30 C360,22 372,26 372,34 C382,70 386,110 378,146 C368,180 350,212 332,240 Z"/>
+    <path fill="url(#bone)" stroke-width="3" d="M362,26 C366,10 376,2 388,2 C380,10 374,20 372,32 Z"/>
+
+    <!-- ===== FAR LEGS ===== -->
+    <path fill="url(#scaleFar)" d="M354,284 C372,286 386,302 386,318 C386,330 380,338 374,344 L390,350 L396,360 L384,358 L388,368 L376,362 L374,372 L364,360 C358,354 356,344 360,334 C356,320 346,308 338,300 Z"/>
+    <path fill="url(#scaleFar)" d="M212,292 C240,288 256,304 254,326 C252,336 246,342 236,348 L218,368 L198,382 L182,388 L172,384 L180,376 L168,376 L178,368 L194,362 L206,348 C196,338 188,324 190,310 Z"/>
+
+    <!-- ===== BODY / NECK / TAIL ===== -->
+    <use xlink:href="#bodyShape" fill="url(#scale)"/>
+    <use xlink:href="#bodyShape" fill="url(#scalePat)" stroke="none"/>
+    <ellipse cx="300" cy="256" rx="54" ry="24" fill="url(#sheen)" stroke="none" transform="rotate(-18 300 256)"/>
+    <ellipse cx="380" cy="200" rx="30" ry="12" fill="url(#sheen)" stroke="none" transform="rotate(-50 380 200)"/>
+    <ellipse cx="80" cy="340" rx="30" ry="10" fill="url(#sheen)" stroke="none" transform="rotate(-45 80 340)"/>
+    <path fill="none" stroke="#2a2e14" stroke-width="2" opacity="0.5" d="M340,236 C350,262 352,290 344,316 M210,262 C222,290 226,316 222,340"/>
+
+    <!-- belly plates -->
+    <path fill="url(#belly)" stroke-width="3" d="M435,192 C420,215 400,245 385,275 C370,305 330,325 280,335 C230,345 180,340 135,330 C100,340 74,358 64,380 L76,376 C86,356 106,342 136,317 C180,327 228,331 276,321 C322,311 356,292 371,265 C388,238 408,212 422,186 Z"/>
+    <g fill="none" stroke="#6a5028" stroke-width="2">
+      <path d="M418,220 L408,212 M400,247 L389,240 M386,274 L373,266 M370,300 L358,288 M345,318 L337,305 M315,328 L310,315 M285,334 L282,321 M255,339 L253,326 M225,341 L224,328 M195,339 L195,327 M165,336 L166,323 M140,331 L140,319 M118,335 L114,324 M96,348 L90,338 M80,364 L73,356"/>
+    </g>
+
+    <!-- spine spikes -->
+    <path fill="url(#bone)" stroke-width="3" d="M392,166 L386,146 L378,172 Z M372,180 L360,160 L356,190 Z M352,198 L336,182 L336,212 Z M318,232 L306,212 L298,240 Z M286,240 L274,220 L266,246 Z M254,248 L240,228 L234,252 Z M222,254 L206,236 L202,258 Z M188,262 L172,246 L170,268 Z M150,276 L132,264 L134,288 Z M118,296 L98,288 L104,306 Z M88,314 L68,310 L78,326 Z M62,338 L42,338 L56,352 Z"/>
+
+    <!-- tail spade -->
+    <path fill="url(#bone)" stroke-width="3.5" d="M80,428 C90,414 106,408 122,414 C116,422 114,432 120,444 C106,448 92,444 80,436 Z"/>
+    <path fill="none" stroke="#8c7c58" stroke-width="1.5" d="M88,432 L114,428"/>
+
+    <!-- ===== NEAR HIND LEG ===== -->
+    <g transform="translate(0 8)">
+      <path fill="url(#limb)" d="M170,280 C200,270 230,285 232,310 C232,322 224,330 214,336 L196,358 L176,372 L160,378 L150,374 L158,366 L146,366 L156,358 L172,352 L184,338 C174,330 162,316 162,300 C162,292 165,285 170,280 Z"/>
+      <path fill="url(#scalePat)" stroke="none" d="M170,280 C200,270 230,285 232,310 C232,322 224,330 214,336 L184,338 C174,330 162,316 162,300 Z"/>
+      <path fill="none" stroke="#2a2e14" stroke-width="2" opacity="0.6" d="M178,292 C196,288 212,296 218,312 M186,338 L200,328"/>
+      <path fill="#d8c47a" stroke="none" opacity="0.4" d="M176,286 C196,280 214,286 222,298 C206,292 190,290 176,286 Z"/>
+      <path fill="url(#bone)" stroke-width="2" d="M150,374 L138,382 L148,370 Z M146,366 L134,368 L146,360 Z M160,378 L152,390 L156,376 Z"/>
+    </g>
+
+    <!-- ===== NEAR FRONT LEG ===== -->
+    <g transform="translate(0 14)">
+      <path fill="url(#limb)" d="M330,262 C350,262 365,280 368,298 C370,310 362,322 356,330 L372,336 L380,346 L368,344 L374,354 L360,348 L360,358 L348,346 C340,340 338,330 342,318 C340,305 330,290 322,282 Z"/>
+      <path fill="none" stroke="#2a2e14" stroke-width="2" opacity="0.6" d="M336,276 C348,282 356,294 358,306"/>
+      <path fill="#d8c47a" stroke="none" opacity="0.4" d="M334,268 C346,268 356,276 360,288 C350,280 342,274 334,268 Z"/>
+      <path fill="url(#bone)" stroke-width="2" d="M380,346 L392,350 L378,340 Z M374,354 L384,362 L372,350 Z M360,358 L364,370 L356,356 Z"/>
+    </g>
+
+    <!-- ===== NEAR WING ===== -->
+    <path fill="url(#memb)" d="M250,40 L175,-25 C150,8 110,14 70,-5 C74,30 50,56 8,70 C40,100 46,140 14,176 C80,186 140,226 184,262 L296,246 L215,170 Z"/>
+    <!-- darker membrane near arm (fold shading) -->
+    <path fill="#3e3018" stroke="none" opacity="0.35" d="M215,170 L296,246 L184,262 C170,248 160,236 150,226 C180,214 200,196 215,170 Z"/>
+    <!-- veins -->
+    <g fill="none" stroke="#5a4426" stroke-width="1.6" opacity="0.8">
+      <path d="M236,100 C200,60 170,30 150,6"/>
+      <path d="M228,130 C180,90 120,60 60,40"/>
+      <path d="M220,160 C170,140 100,120 30,110"/>
+      <path d="M222,196 C170,190 100,180 40,160"/>
+      <path d="M240,226 C200,220 150,222 110,214"/>
+    </g>
+    <path fill="#f0dca0" stroke="none" opacity="0.3" d="M240,40 L178,-10 C158,14 120,22 84,14 C130,34 190,44 240,40 Z"/>
+    <!-- finger bones -->
+    <g fill="none" stroke-width="8">
+      <path d="M250,40 L175,-25"/>
+      <path d="M250,40 C190,20 120,6 70,-5"/>
+      <path d="M250,40 C170,50 80,62 8,70"/>
+      <path d="M248,46 C170,90 90,140 14,176"/>
+    </g>
+    <g fill="none" stroke="url(#bone)" stroke-width="4">
+      <path d="M250,40 L175,-25"/>
+      <path d="M250,40 C190,20 120,6 70,-5"/>
+      <path d="M250,40 C170,50 80,62 8,70"/>
+      <path d="M248,46 C170,90 90,140 14,176"/>
+    </g>
+    <!-- knuckle joints -->
+    <g fill="url(#bone)" stroke-width="2.5">
+      <circle cx="210" cy="5" r="4"/>
+      <circle cx="160" cy="18" r="4"/>
+      <circle cx="140" cy="56" r="4"/>
+      <circle cx="150" cy="104" r="4"/>
+    </g>
+    <!-- arm: upper arm + forearm -->
+    <path fill="url(#limb)" d="M290,254 C276,226 250,198 214,182 C204,176 206,162 218,160 C250,170 280,196 306,236 Z"/>
+    <path fill="url(#limb)" d="M206,176 C210,130 228,84 242,40 C248,30 262,30 264,42 C256,90 240,136 228,180 Z"/>
+    <circle cx="254" cy="38" r="12" fill="url(#limb)"/>
+    <path fill="none" stroke="#d8c47a" stroke-width="2.5" opacity="0.6" d="M216,166 C224,124 236,84 248,48"/>
+    <path fill="none" stroke="#2a2e14" stroke-width="2" opacity="0.5" d="M230,180 C252,196 272,214 290,240"/>
+    <!-- thumb claw -->
+    <path fill="url(#bone)" stroke-width="3" d="M260,28 C266,12 278,4 290,4 C282,12 276,22 270,36 Z"/>
+
+    <!-- ===== HEAD ===== -->
+    <!-- mouth interior -->
+    <path fill="url(#mouth)" d="M436,176 L500,166 L496,204 L446,198 Z"/>
+    <!-- lower jaw -->
+    <path fill="url(#limb)" d="M410,184 C426,182 444,184 458,186 L496,200 C502,206 498,214 488,214 L452,212 C430,212 412,202 410,184 Z"/>
+    <path fill="url(#belly)" stroke-width="2.5" d="M420,204 C440,212 466,214 488,214 C470,210 448,206 426,198 Z"/>
+    <!-- lower teeth -->
+    <path fill="#f4ecd4" stroke-width="2" d="M462,190 L466,180 L470,192 Z M476,195 L480,184 L484,197 Z M450,188 L453,180 L457,188 Z"/>
+    <!-- upper head -->
+    <path fill="url(#scale)" d="M396,150 C406,132 428,126 450,134 L494,150 C506,154 508,166 500,172 L462,176 L444,184 C424,192 404,188 396,176 C392,168 392,158 396,150 Z"/>
+    <path fill="url(#scalePat)" stroke="none" d="M396,150 C406,132 428,126 450,134 L494,150 C506,154 508,166 500,172 L462,176 L444,184 C424,192 404,188 396,176 C392,168 392,158 396,150 Z"/>
+    <path fill="#e2d48e" stroke="none" opacity="0.45" d="M410,140 C424,132 444,134 470,144 C450,142 430,142 410,150 Z"/>
+    <!-- upper teeth -->
+    <path fill="#f4ecd4" stroke-width="2" d="M468,174 L472,186 L476,173 Z M482,172 L486,184 L490,171 Z M454,177 L457,187 L461,176 Z M494,170 L497,180 L500,169 Z"/>
+    <!-- brow ridge + eye -->
+    <path fill="#2a1c10" stroke-width="2" d="M430,152 C436,146 446,146 452,152 C446,156 436,158 430,152 Z"/>
+    <path fill="url(#eye)" stroke-width="2" d="M432,153 C437,149 445,149 450,153 C445,157 437,157 432,153 Z"/>
+    <path fill="#1c1712" stroke="none" d="M440,149.5 L442,149.5 L442,156.5 L440,156.5 Z"/>
+    <path fill="url(#scale)" stroke-width="3" d="M424,146 C436,136 452,138 462,146 C450,144 438,144 424,150 Z"/>
+    <!-- nostril -->
+    <path fill="none" stroke-width="2.5" d="M490,154 C494,152 498,154 498,158"/>
+    <!-- cheek spikes / frill -->
+    <path fill="url(#bone)" stroke-width="2.5" d="M404,180 L384,192 L406,190 Z M398,168 L376,172 L398,176 Z"/>
+    <!-- horns -->
+    <path fill="url(#bone)" stroke-width="3.5" d="M410,142 C396,120 374,106 346,102 C366,116 382,132 398,156 Z"/>
+    <path fill="url(#bone)" stroke-width="3.5" d="M424,134 C416,108 400,90 376,80 C392,98 404,118 410,142 Z"/>
+    <g fill="none" stroke="#8c7c58" stroke-width="1.5">
+      <path d="M390,126 L396,122 M376,116 L382,112 M408,112 L414,110 M398,100 L404,96"/>
+    </g>
+    <!-- jaw muscle line -->
+    <path fill="none" stroke="#2a2e14" stroke-width="2" opacity="0.6" d="M408,164 C416,172 426,176 440,176"/>
+  </g>
+</svg>

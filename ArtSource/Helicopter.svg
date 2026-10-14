@@ -1,0 +1,190 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="512" height="512" viewBox="0 0 512 512">
+  <defs>
+    <linearGradient id="hbody" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#8b9475"/>
+      <stop offset="0.2" stop-color="#6d7759"/>
+      <stop offset="0.55" stop-color="#4f5841"/>
+      <stop offset="0.85" stop-color="#3a412f"/>
+      <stop offset="1" stop-color="#4a5140"/>
+    </linearGradient>
+    <linearGradient id="hboom" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#848d6f"/>
+      <stop offset="0.4" stop-color="#5c6649"/>
+      <stop offset="1" stop-color="#363d2c"/>
+    </linearGradient>
+    <linearGradient id="hdark" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#6c705f"/>
+      <stop offset="0.5" stop-color="#474b3e"/>
+      <stop offset="1" stop-color="#2c2f27"/>
+    </linearGradient>
+    <linearGradient id="hglass" x1="0" y1="0" x2="0.35" y2="1">
+      <stop offset="0" stop-color="#eef2ea"/>
+      <stop offset="0.25" stop-color="#9fb0a6"/>
+      <stop offset="0.65" stop-color="#46564f"/>
+      <stop offset="1" stop-color="#232b28"/>
+    </linearGradient>
+    <linearGradient id="pod" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#7f8770"/>
+      <stop offset="0.3" stop-color="#5d6650"/>
+      <stop offset="1" stop-color="#2f3528"/>
+    </linearGradient>
+    <linearGradient id="hblade" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#5a5c55"/>
+      <stop offset="1" stop-color="#22231f"/>
+    </linearGradient>
+    <radialGradient id="rdisc" cx="0.5" cy="0.5" r="0.5">
+      <stop offset="0" stop-color="#4a4d44" stop-opacity="0.08"/>
+      <stop offset="0.75" stop-color="#4a4d44" stop-opacity="0.18"/>
+      <stop offset="0.96" stop-color="#3a3c35" stop-opacity="0.32"/>
+      <stop offset="1" stop-color="#3a3c35" stop-opacity="0"/>
+    </radialGradient>
+    <radialGradient id="tdisc" cx="0.5" cy="0.5" r="0.5">
+      <stop offset="0" stop-color="#4a4d44" stop-opacity="0.15"/>
+      <stop offset="0.85" stop-color="#4a4d44" stop-opacity="0.3"/>
+      <stop offset="1" stop-color="#4a4d44" stop-opacity="0"/>
+    </radialGradient>
+    <radialGradient id="lens" cx="0.35" cy="0.35" r="0.7">
+      <stop offset="0" stop-color="#e9e3c0"/>
+      <stop offset="0.3" stop-color="#7a6f3c"/>
+      <stop offset="1" stop-color="#1c1a10"/>
+    </radialGradient>
+    <clipPath id="hclip">
+      <path d="M180,224 C210,214 250,206 300,206 L350,210 L420,226 C450,234 472,246 480,262 C482,276 474,290 456,296 L300,304 C250,304 214,292 182,262 Z"/>
+    </clipPath>
+    <filter id="hblur" x="-10%" y="-200%" width="120%" height="500%"><feGaussianBlur stdDeviation="1.4"/></filter>
+  </defs>
+
+  <g stroke-linejoin="round" stroke-linecap="round">
+    <!-- far skid -->
+    <path d="M262,340 L436,340 C446,340 452,336 454,330" fill="none" stroke="#1c1712" stroke-width="7"/>
+    <path d="M262,340 L436,340 C446,340 452,336 454,330" fill="none" stroke="#3b3f34" stroke-width="3"/>
+
+    <!-- tail boom -->
+    <path d="M192,226 L64,236 C54,237 48,241 48,246 C48,251 54,254 64,255 L192,264 Z" fill="url(#hboom)" stroke="#1c1712" stroke-width="4"/>
+    <path d="M186,232 L66,240" stroke="#e6ecd2" stroke-width="2.5" opacity="0.35"/>
+    <g stroke="#1c1712" stroke-width="1.5" opacity="0.5">
+      <path d="M150,229 L150,261"/><path d="M110,232 L110,258"/>
+    </g>
+    <!-- tail rotor drive shaft cover -->
+    <path d="M186,224 L78,232 L78,236 L186,229 Z" fill="#3e4535" stroke="#1c1712" stroke-width="2"/>
+
+    <!-- horizontal stabilizer -->
+    <path d="M72,252 L122,254 C124,260 120,264 114,264 L76,266 C70,266 68,258 72,252 Z" fill="url(#hdark)" stroke="#1c1712" stroke-width="3"/>
+
+    <!-- tail fin -->
+    <path d="M58,252 L40,188 C38,180 44,174 52,174 L72,176 C78,177 80,182 80,188 L90,240 Z" fill="url(#hboom)" stroke="#1c1712" stroke-width="4"/>
+    <path d="M48,184 L58,236" stroke="#e6ecd2" stroke-width="2" opacity="0.3"/>
+
+    <!-- tail rotor -->
+    <circle cx="60" cy="200" r="38" fill="url(#tdisc)"/><circle cx="60" cy="200" r="37" fill="none" stroke="#2c2e27" stroke-width="1.2" opacity="0.35"/>
+    <g opacity="0.95">
+      <path d="M62,200 L34,172 L39,167 L66,196 Z" fill="url(#hblade)" stroke="#1c1712" stroke-width="1"/>
+      <path d="M62,200 L90,228 L85,233 L58,204 Z" fill="url(#hblade)" stroke="#1c1712" stroke-width="1"/>
+      <path d="M62,200 L88,172 L92,176 L66,204 Z" fill="url(#hblade)" opacity="0.4"/>
+      <path d="M62,200 L36,228 L32,224 L58,196 Z" fill="url(#hblade)" opacity="0.4"/>
+    </g>
+    <circle cx="62" cy="200" r="7" fill="url(#hdark)" stroke="#1c1712" stroke-width="2.5"/>
+    <circle cx="60" cy="198" r="2" fill="#c9cdb8" opacity="0.7"/>
+
+    <!-- engine nacelle -->
+    <path d="M214,208 C222,192 244,186 286,186 L332,188 C342,190 348,198 348,208 Z" fill="url(#hdark)" stroke="#1c1712" stroke-width="3.5"/>
+    <path d="M232,194 C250,190 280,190 330,192" fill="none" stroke="#e6ecd2" stroke-width="2.5" opacity="0.35"/>
+    <path d="M300,188 L300,207 M260,189 L258,207" stroke="#1c1712" stroke-width="1.5" opacity="0.6"/>
+    <g stroke="#1c1712" stroke-width="1.5" opacity="0.6">
+      <path d="M312,194 L326,194 M312,198 L326,198 M312,202 L326,202"/>
+    </g>
+
+    <!-- fuselage -->
+    <path d="M180,224 C210,214 250,206 300,206 L350,210 L420,226 C450,234 472,246 480,262 C482,276 474,290 456,296 L300,304 C250,304 214,292 182,262 Z" fill="url(#hbody)" stroke="#1c1712" stroke-width="4"/>
+
+    <g clip-path="url(#hclip)">
+      <path d="M196,224 C240,212 290,210 340,214 L420,232" fill="none" stroke="#e6ecd2" stroke-width="4" opacity="0.3"/>
+      <!-- exhaust soot -->
+      <path d="M220,212 C250,214 270,220 300,224 L300,232 C260,230 230,226 200,226 Z" fill="#1c1712" opacity="0.3"/>
+      <g fill="none" stroke="#22261c" stroke-width="1.6" opacity="0.6">
+        <path d="M232,214 L236,298"/>
+        <path d="M300,208 L302,304"/>
+        <path d="M382,218 L384,300"/>
+        <path d="M190,256 C260,262 360,264 476,262" opacity="0.6"/>
+        <path d="M246,228 L290,228 L290,256 L246,256 Z"/>
+        <path d="M320,236 L366,236 L366,252 L320,252 Z" opacity="0.7"/>
+      </g>
+      <g fill="#22261c" opacity="0.5">
+        <circle cx="234" cy="226" r="1.2"/><circle cx="235" cy="240" r="1.2"/><circle cx="235" cy="270" r="1.2"/><circle cx="236" cy="284" r="1.2"/>
+        <circle cx="301" cy="220" r="1.2"/><circle cx="301" cy="234" r="1.2"/><circle cx="302" cy="270" r="1.2"/><circle cx="302" cy="286" r="1.2"/>
+        <circle cx="383" cy="232" r="1.2"/><circle cx="383" cy="246" r="1.2"/><circle cx="384" cy="272" r="1.2"/><circle cx="384" cy="286" r="1.2"/>
+        <circle cx="210" cy="258" r="1.1"/><circle cx="260" cy="260" r="1.1"/><circle cx="330" cy="262" r="1.1"/><circle cx="420" cy="263" r="1.1"/><circle cx="450" cy="262" r="1.1"/>
+      </g>
+      <g fill="#c8cfb0" opacity="0.35">
+        <path d="M262,232 l6,-1 l-2,3 z"/><path d="M350,228 l7,0 l-3,3 z"/><path d="M420,250 l5,-1 l-1,3 z"/>
+      </g>
+      <path d="M190,286 C260,300 380,300 470,286 L470,310 L190,310 Z" fill="#1c1712" opacity="0.2"/>
+    </g>
+
+    <!-- engine exhaust -->
+    <ellipse cx="214" cy="204" rx="6" ry="9" fill="#26231e" stroke="#1c1712" stroke-width="3"/>
+
+    <!-- rear (pilot) canopy -->
+    <path d="M330,210 L340,186 C343,180 348,178 356,178 L394,182 C398,183 401,186 402,190 L412,224 Z" fill="url(#hglass)" stroke="#1c1712" stroke-width="3.5"/>
+    <!-- front (gunner) canopy -->
+    <path d="M402,224 L410,202 C412,197 416,195 422,196 L444,200 C448,201 451,204 453,208 L470,246 C452,236 430,228 402,224 Z" fill="url(#hglass)" stroke="#1c1712" stroke-width="3.5"/>
+    <path d="M346,196 C350,186 360,184 380,186" fill="none" stroke="#ffffff" stroke-width="3.5" opacity="0.75"/>
+    <path d="M414,210 C418,202 426,200 440,203" fill="none" stroke="#ffffff" stroke-width="3" opacity="0.7"/>
+    <path d="M444,212 L458,236" stroke="#ffffff" stroke-width="2" opacity="0.4"/>
+    <path d="M370,180 L374,218 M430,198 L438,232" stroke="#3a4232" stroke-width="3"/>
+    <path d="M354,206 C354,198 358,194 364,194 C370,194 372,200 372,206 L372,214 L354,212 Z" fill="#1c1d18" opacity="0.4"/>
+    <path d="M414,222 C414,214 418,210 424,210 C430,210 432,216 432,222 L432,228 Z" fill="#1c1d18" opacity="0.4"/>
+
+    <!-- sensor turret -->
+    <circle cx="472" cy="276" r="15" fill="url(#hdark)" stroke="#1c1712" stroke-width="3.5"/>
+    <rect x="474" y="268" width="12" height="15" rx="3" fill="url(#lens)" stroke="#1c1712" stroke-width="2"/>
+    <circle cx="478" cy="272" r="2" fill="#ffffff" opacity="0.8"/>
+
+    <!-- chin gun -->
+    <circle cx="420" cy="302" r="9" fill="url(#hdark)" stroke="#1c1712" stroke-width="3"/>
+    <path d="M424,300 L466,304 L466,309 L424,307 Z" fill="#2c2f27" stroke="#1c1712" stroke-width="2.5"/>
+
+    <!-- stub wing -->
+    <path d="M272,254 L360,254 C364,255 365,259 363,263 L346,290 L296,292 Z" fill="url(#hdark)" stroke="#1c1712" stroke-width="3.5"/>
+    <path d="M280,258 L358,258" stroke="#e6ecd2" stroke-width="2" opacity="0.45"/>
+    <path d="M352,262 L338,288" stroke="#1c1712" stroke-width="1.5" opacity="0.5"/>
+    <!-- pylon -->
+    <path d="M308,290 L334,290 L332,300 L310,300 Z" fill="#3a3f33" stroke="#1c1712" stroke-width="2.5"/>
+
+    <!-- rocket pod -->
+    <path d="M278,302 C270,302 266,308 266,316 C266,324 270,330 278,330 L360,330 L360,302 Z" fill="url(#pod)" stroke="#1c1712" stroke-width="3.5"/>
+    <ellipse cx="360" cy="316" rx="7" ry="14" fill="#3b4133" stroke="#1c1712" stroke-width="3"/>
+    <g fill="#14130f">
+      <circle cx="358" cy="309" r="2"/><circle cx="362" cy="314" r="2"/><circle cx="358" cy="319" r="2"/><circle cx="362" cy="324" r="2"/><circle cx="356" cy="314" r="1.6"/>
+    </g>
+    <path d="M276,307 L352,307" stroke="#e6ecd2" stroke-width="2.5" opacity="0.4"/>
+    <path d="M300,302 L300,330 M336,302 L336,330" stroke="#1c1712" stroke-width="1.5" opacity="0.55"/>
+    <path d="M300,302 L300,330" stroke="#b5a34f" stroke-width="2.5" opacity="0.6"/>
+
+    <!-- near skid + struts -->
+    <path d="M300,300 L290,348 M406,298 L416,348" stroke="#1c1712" stroke-width="8"/>
+    <path d="M300,300 L290,348 M406,298 L416,348" stroke="#4b5242" stroke-width="4"/>
+    <path d="M236,350 L440,350 C454,350 462,344 466,334" fill="none" stroke="#1c1712" stroke-width="9"/>
+    <path d="M236,350 L440,350 C454,350 462,344 466,334" fill="none" stroke="#535a48" stroke-width="5"/>
+    <path d="M240,348.5 L438,348.5" stroke="#c9cfb6" stroke-width="1.5" opacity="0.5"/>
+
+    <!-- rotor mast + hub -->
+    <path d="M262,188 L264,164 L278,164 L280,188 Z" fill="url(#hdark)" stroke="#1c1712" stroke-width="3"/>
+    <path d="M254,170 L288,170 L286,178 L256,178 Z" fill="#3a3f33" stroke="#1c1712" stroke-width="2.5"/>
+
+    <!-- main rotor disc -->
+    <ellipse cx="270" cy="160" rx="224" ry="24" fill="url(#rdisc)"/><ellipse cx="270" cy="160" rx="222" ry="22" fill="none" stroke="#2c2e27" stroke-width="1.5" opacity="0.25" stroke-dasharray="40 14"/>
+    
+    <!-- blades -->
+    <g filter="url(#hblur)" opacity="0.55">
+      <path d="M270,160 L130,176 L126,172 L270,156 Z" fill="#2a2b25"/>
+      <path d="M270,156 L410,144 L414,148 L270,160 Z" fill="#2a2b25"/>
+    </g>
+    <path d="M270,155 L60,153 C52,153 48,155 50,158 L270,161 Z" fill="url(#hblade)" stroke="#1c1712" stroke-width="1.5"/>
+    <path d="M270,155 L478,157 C486,157 490,159 486,161 L270,161 Z" fill="url(#hblade)" stroke="#1c1712" stroke-width="1.5"/>
+    <path d="M90,155 L250,156 M290,156 L460,157" stroke="#9a9d90" stroke-width="1" opacity="0.6"/>
+    <path d="M51,153.5 L62,153.5 L62,158 L50,158 Z M476,157 L487,157.5 L486,161 L476,161 Z" fill="#c9b75a"/>
+    <ellipse cx="270" cy="158" rx="20" ry="8" fill="url(#hdark)" stroke="#1c1712" stroke-width="3"/>
+    <ellipse cx="266" cy="155" rx="7" ry="2.5" fill="#d2d6c2" opacity="0.5"/>
+  </g>
+</svg>

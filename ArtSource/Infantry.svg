@@ -1,0 +1,188 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="512" height="512" viewBox="0 0 512 512">
+<defs>
+  <style>
+    .o{stroke:#1c1712;stroke-width:4;stroke-linejoin:round;stroke-linecap:round}
+    .t{stroke:#1c1712;stroke-width:3;stroke-linejoin:round;stroke-linecap:round}
+    .f{fill:none;stroke:#2a2018;stroke-width:2;stroke-linecap:round;opacity:.55}
+    .hl{fill:none;stroke:#fff;stroke-width:2.5;stroke-linecap:round;opacity:.45}
+  </style>
+  <linearGradient id="steel" x1="0" y1="0" x2="1" y2="1">
+    <stop offset="0" stop-color="#e4e8ea"/><stop offset=".45" stop-color="#a3abb1"/><stop offset="1" stop-color="#4f575e"/>
+  </linearGradient>
+  <linearGradient id="steelH" x1="0" y1="0" x2="1" y2="0">
+    <stop offset="0" stop-color="#6c747b"/><stop offset=".35" stop-color="#eef1f2"/><stop offset=".6" stop-color="#a7afb5"/><stop offset="1" stop-color="#535b61"/>
+  </linearGradient>
+  <linearGradient id="mailG" x1="0" y1="0" x2="1" y2="1">
+    <stop offset="0" stop-color="#b9c0c4"/><stop offset="1" stop-color="#4e555b"/>
+  </linearGradient>
+  <pattern id="mail" width="7" height="6" patternUnits="userSpaceOnUse">
+    <path d="M0 3 a3.5 3 0 0 1 7 0" fill="none" stroke="#262a2e" stroke-width="1.1" opacity=".6"/>
+    <path d="M-3.5 6 a3.5 3 0 0 1 7 0 M3.5 6 a3.5 3 0 0 1 7 0" fill="none" stroke="#262a2e" stroke-width="1.1" opacity=".6"/>
+    <path d="M1 2.2 a2.6 2 0 0 1 3 -1" fill="none" stroke="#fff" stroke-width=".8" opacity=".5"/>
+  </pattern>
+  <linearGradient id="cloth" x1="0" y1="0" x2="1" y2="1">
+    <stop offset="0" stop-color="#b9a679"/><stop offset=".55" stop-color="#8c7a53"/><stop offset="1" stop-color="#55482f"/>
+  </linearGradient>
+  <linearGradient id="clothSkirt" x1="0" y1="0" x2="0" y2="1">
+    <stop offset="0" stop-color="#9d8a5f"/><stop offset="1" stop-color="#5f5135"/>
+  </linearGradient>
+  <linearGradient id="trou" x1="0" y1="0" x2="1" y2="0">
+    <stop offset="0" stop-color="#7a6a55"/><stop offset="1" stop-color="#4a3f33"/>
+  </linearGradient>
+  <linearGradient id="trouFar" x1="0" y1="0" x2="1" y2="0">
+    <stop offset="0" stop-color="#5a4f42"/><stop offset="1" stop-color="#352d25"/>
+  </linearGradient>
+  <linearGradient id="leather" x1="0" y1="0" x2="1" y2="1">
+    <stop offset="0" stop-color="#a5703f"/><stop offset=".6" stop-color="#6e4524"/><stop offset="1" stop-color="#422814"/>
+  </linearGradient>
+  <linearGradient id="leatherFar" x1="0" y1="0" x2="1" y2="1">
+    <stop offset="0" stop-color="#7a5230"/><stop offset="1" stop-color="#33200f"/>
+  </linearGradient>
+  <linearGradient id="skin" x1="0" y1="0" x2="1" y2="1">
+    <stop offset="0" stop-color="#f0c39b"/><stop offset=".6" stop-color="#d39a72"/><stop offset="1" stop-color="#a26a48"/>
+  </linearGradient>
+  <radialGradient id="wood" cx=".35" cy=".3" r=".8">
+    <stop offset="0" stop-color="#b98450"/><stop offset=".6" stop-color="#8a5a30"/><stop offset="1" stop-color="#4f3118"/>
+  </radialGradient>
+  <radialGradient id="boss" cx=".35" cy=".3" r=".75">
+    <stop offset="0" stop-color="#f4f6f7"/><stop offset=".5" stop-color="#9aa2a8"/><stop offset="1" stop-color="#40474d"/>
+  </radialGradient>
+  <linearGradient id="blade" x1="0" y1="0" x2="0" y2="1">
+    <stop offset="0" stop-color="#f7f9fa"/><stop offset=".5" stop-color="#c3cacf"/><stop offset=".52" stop-color="#8b949b"/><stop offset="1" stop-color="#5d666d"/>
+  </linearGradient>
+  <linearGradient id="brass" x1="0" y1="0" x2="1" y2="1">
+    <stop offset="0" stop-color="#f1d58a"/><stop offset=".5" stop-color="#b58a3a"/><stop offset="1" stop-color="#6b4c1a"/>
+  </linearGradient>
+  <clipPath id="shieldClip"><ellipse cx="196" cy="228" rx="70" ry="80"/></clipPath>
+</defs>
+
+<!-- ============ SHIELD (far arm, behind body) ============ -->
+<g>
+  <ellipse cx="196" cy="228" rx="78" ry="88" fill="url(#steel)" class="o"/>
+  <ellipse cx="196" cy="228" rx="70" ry="80" fill="url(#wood)" class="t"/>
+  <g clip-path="url(#shieldClip)">
+    <rect x="120" y="140" width="26" height="180" fill="#7a4d27" opacity=".35"/>
+    <rect x="172" y="140" width="24" height="180" fill="#c08b56" opacity=".25"/>
+    <rect x="222" y="140" width="26" height="180" fill="#5a3518" opacity=".3"/>
+    <path d="M146 140 V320 M172 140 V320 M196 140 V320 M222 140 V320 M248 140 V320" stroke="#2c1a0c" stroke-width="2.2" opacity=".75"/>
+    <path d="M130 170 q4 40 -1 90 M157 160 q-3 50 2 120 M184 165 q3 30 -2 60 M184 250 q-2 30 2 55 M208 158 q4 60 -1 140 M235 172 q-3 50 3 110" class="f" opacity=".35"/>
+    <path d="M128 160 q20 -30 60 -32" stroke="#fff" stroke-width="5" fill="none" opacity=".18" stroke-linecap="round"/>
+  </g>
+  <!-- rim rivets -->
+  <g fill="#dfe3e5" stroke="#1c1712" stroke-width="1.2">
+    <circle cx="196" cy="144" r="2.8"/><circle cx="246" cy="161" r="2.8"/><circle cx="270" cy="228" r="2.8"/><circle cx="246" cy="295" r="2.8"/>
+    <circle cx="196" cy="312" r="2.8"/><circle cx="146" cy="295" r="2.8"/><circle cx="122" cy="228" r="2.8"/><circle cx="146" cy="161" r="2.8"/>
+  </g>
+  <path d="M140 160 a76 86 0 0 1 60 -28" class="hl" stroke-width="3"/>
+  <circle cx="196" cy="228" r="20" fill="url(#boss)" class="t"/>
+  <path d="M186 220 a12 12 0 0 1 9 -6" class="hl" stroke-width="3" opacity=".8"/>
+</g>
+
+<!-- ============ FAR LEG (forward) ============ -->
+<g>
+  <path d="M256 298 C282 290 306 298 314 318 C326 342 334 366 336 392 L300 400 C294 372 280 342 262 324 Z" fill="url(#trouFar)" class="o"/>
+  <path d="M298 398 L338 388 C340 414 338 442 340 466 C354 474 374 482 378 494 C379 500 374 502 366 502 L316 502 C310 494 311 482 315 474 C304 452 296 426 298 398 Z" fill="url(#leatherFar)" class="o"/>
+  <path d="M294 396 L340 386 L342 406 L298 414 Z" fill="#5a3a1e" class="t"/>
+  <path d="M316 488 L372 492" class="f"/>
+  <path d="M306 424 q2 26 10 46" class="f" opacity=".35"/>
+</g>
+
+<!-- ============ TORSO ============ -->
+<g>
+  <!-- mail shirt base (visible at shoulders/neck) -->
+  <path d="M238 136 C224 150 220 190 226 230 L230 280 L294 280 C300 240 310 200 308 172 C304 150 292 136 270 134 Z" fill="url(#mailG)" class="o"/>
+  <path d="M238 136 C224 150 220 190 226 230 L230 280 L294 280 C300 240 310 200 308 172 C304 150 292 136 270 134 Z" fill="url(#mail)"/>
+  <!-- surcoat body -->
+  <path d="M232 160 C236 150 246 146 256 150 C266 156 282 156 300 156 C310 190 304 230 298 266 L230 268 C226 230 226 190 232 160 Z" fill="url(#cloth)" class="o"/>
+  <path d="M248 175 q4 40 0 85 M270 170 q6 45 2 92 M286 172 q4 30 2 60" class="f" opacity=".35"/>
+  <path d="M238 168 q-4 40 0 80" class="hl" opacity=".3"/>
+  <!-- skirt -->
+  <path d="M230 272 L296 272 C306 290 316 310 322 334 C306 342 292 336 280 342 C266 336 254 344 240 338 C228 344 218 338 210 340 C214 316 222 292 230 272 Z" fill="url(#clothSkirt)" class="o"/>
+  <path d="M244 282 q-6 28 -4 54 M264 284 q2 26 0 54 M284 282 q8 26 12 54 M302 296 q6 18 10 38" class="f"/>
+  <path d="M236 284 q-6 22 -10 46" class="hl" opacity=".25"/>
+  <!-- mail hem peeking under skirt -->
+  <path d="M214 336 C226 344 240 346 252 342 C266 348 282 344 296 342 C306 346 316 340 322 334 L324 346 C310 354 290 352 276 354 C260 356 236 354 214 348 Z" fill="url(#mailG)" class="t"/>
+  <path d="M214 336 C226 344 240 346 252 342 C266 348 282 344 296 342 C306 346 316 340 322 334 L324 346 C310 354 290 352 276 354 C260 356 236 354 214 348 Z" fill="url(#mail)"/>
+  <!-- belt -->
+  <path d="M228 260 L298 258 L299 276 L228 278 Z" fill="url(#leather)" class="t"/>
+  <path d="M231 264 L296 262 M231 274 L296 272" stroke="#d9b48a" stroke-width="1" stroke-dasharray="3 3" opacity=".6"/>
+  <rect x="282" y="257" width="16" height="21" rx="2" fill="url(#brass)" class="t"/>
+  <rect x="287" y="262" width="6" height="11" fill="#5a3a1e"/>
+  <!-- belt pouch -->
+  <path d="M232 276 L254 276 L254 300 C254 306 232 306 232 300 Z" fill="url(#leather)" class="t"/>
+  <path d="M232 284 L254 284" stroke="#1c1712" stroke-width="2"/>
+  <circle cx="243" cy="289" r="2.5" fill="url(#brass)" stroke="#1c1712" stroke-width="1"/>
+</g>
+
+<!-- ============ NEAR LEG (back, pushing off) ============ -->
+<g>
+  <path d="M222 300 L274 304 C278 334 266 370 256 398 L220 402 C210 372 212 334 222 300 Z" fill="url(#trou)" class="o"/>
+  <path d="M244 320 q-4 30 -2 70" class="f" opacity=".35"/>
+  <path d="M226 302 L274 306 L272 326 C258 320 240 322 222 326 Z" fill="#1c1712" opacity=".3"/>
+  <path d="M216 398 L262 394 C258 422 240 452 226 474 C236 482 244 490 242 499 C240 502 234 503 226 502 C212 498 196 492 184 486 C178 480 180 472 188 466 C190 444 200 418 216 398 Z" fill="url(#leather)" class="o"/>
+  <path d="M214 396 L264 390 L260 410 L212 416 Z" fill="#7a4a24" class="t"/>
+  <path d="M224 414 q-10 26 -24 52" class="hl" opacity=".3"/>
+  <path d="M190 486 L240 498" class="f"/>
+  <path d="M232 470 L222 492" class="f" opacity=".35"/>
+</g>
+
+<!-- ============ HEAD ============ -->
+<g>
+  <!-- neck -->
+  <path d="M262 112 L288 116 L290 142 L262 144 Z" fill="url(#skin)" class="t"/>
+  <!-- aventail (mail hood over back of head/neck) -->
+  <path d="M246 84 C238 100 238 124 242 140 C254 150 276 150 292 142 L288 126 C276 128 264 124 258 112 L256 86 Z" fill="url(#mailG)" class="o"/>
+  <path d="M246 84 C238 100 238 124 242 140 C254 150 276 150 292 142 L288 126 C276 128 264 124 258 112 L256 86 Z" fill="url(#mail)"/>
+  <!-- face -->
+  <path d="M258 80 L293 80 C295 84 298 87 297 91 C300 96 304 99 307 103 C305 106 301 106 298 107 C300 109 300 111 298 113 C300 115 300 117 298 119 C299 123 297 127 292 129 C285 132 274 130 266 124 C260 118 257 106 257 96 Z" fill="url(#skin)" class="o"/>
+  <!-- beard -->
+  <path d="M266 112 C272 118 280 118 288 117 L297 119 C299 123 297 128 292 130 C284 133 274 131 266 124 C262 120 262 114 266 112 Z" fill="#5a3d26" class="t"/>
+  <path d="M286 112 q6 -2 11 0" stroke="#5a3d26" stroke-width="3" fill="none" stroke-linecap="round"/>
+  <!-- eye & brow -->
+  <path d="M283 92 q5 -3 9 0 q-4 3 -9 0 Z" fill="#fff" stroke="#1c1712" stroke-width="1.5"/>
+  <circle cx="289" cy="92" r="1.8" fill="#2a1d14"/>
+  <path d="M280 87 q7 -4 15 -1" stroke="#3b2a1c" stroke-width="3" fill="none" stroke-linecap="round"/>
+  <path d="M300 100 q-3 4 -1 6" stroke="#8a5a3c" stroke-width="1.5" fill="none"/>
+  <path d="M276 100 q5 6 2 14" stroke="#a26a48" stroke-width="2" fill="none" opacity=".6"/>
+  <path d="M294 113 l4 0" stroke="#7a3f2c" stroke-width="1.5"/>
+  <!-- helmet -->
+  <path d="M244 92 C240 58 256 36 276 36 C296 36 306 56 304 84 C286 80 262 80 244 92 Z" fill="url(#steel)" class="o"/>
+  <path d="M242 90 C262 78 288 76 306 82 L307 90 C288 84 262 86 243 98 Z" fill="url(#steelH)" class="t"/>
+  <path d="M274 37 C270 50 268 66 270 82" stroke="#1c1712" stroke-width="3" fill="none"/>
+  <path d="M276 37 C272 50 271 66 273 82" stroke="#f2f4f5" stroke-width="1.5" fill="none" opacity=".6"/>
+  <path d="M254 52 C260 44 268 40 272 40" class="hl" stroke-width="4" opacity=".7"/>
+  <!-- nasal guard -->
+  <path d="M299 82 L305 82 L306 100 L301 100 Z" fill="url(#steelH)" class="t"/>
+  <g fill="#e8ecee" stroke="#1c1712" stroke-width="1"><circle cx="252" cy="88" r="2"/><circle cx="266" cy="84" r="2"/><circle cx="282" cy="82" r="2"/><circle cx="296" cy="82" r="2"/></g>
+</g>
+
+<!-- ============ NEAR ARM + SWORD ============ -->
+<g>
+  <!-- upper arm (mail sleeve) -->
+  <path d="M244 146 C260 134 284 142 288 164 L302 210 L276 226 L252 182 C244 170 241 158 244 146 Z" fill="url(#mailG)" class="o"/>
+  <path d="M244 146 C260 134 284 142 288 164 L302 210 L276 226 L252 182 C244 170 241 158 244 146 Z" fill="url(#mail)"/>
+  <!-- shoulder pauldron -->
+  <path d="M240 150 C244 132 270 130 284 142 C292 152 292 166 288 176 C272 170 254 172 242 178 C236 168 236 158 240 150 Z" fill="url(#steel)" class="o"/>
+  <path d="M244 166 C258 160 274 160 289 165" stroke="#1c1712" stroke-width="2.5" fill="none"/>
+  <path d="M248 146 C256 138 268 138 276 142" class="hl" stroke-width="3.5" opacity=".7"/>
+  <!-- forearm with leather bracer -->
+  <path d="M276 224 L300 208 C312 212 322 216 332 220 L334 246 C318 246 296 240 276 224 Z" fill="url(#leather)" class="o"/>
+  <path d="M290 216 L296 236 M306 216 L310 240 M320 218 L322 244" stroke="#2a1a0c" stroke-width="1.6" opacity=".7"/>
+  <path d="M286 216 l40 4" stroke="#d9b48a" stroke-width="1" stroke-dasharray="2.5 2.5" opacity=".6"/>
+  <!-- sword -->
+  <g transform="translate(342 234) rotate(-24)">
+    <path d="M24 -7 L150 -5 L170 0 L150 5 L24 7 Z" fill="url(#blade)" class="o"/>
+    <path d="M28 0 L148 0" stroke="#5d666d" stroke-width="1.6"/>
+    <path d="M30 -4 L146 -3" stroke="#fff" stroke-width="1.5" opacity=".7"/>
+    <path d="M14 -24 C18 -26 22 -26 24 -24 L24 24 C22 26 18 26 14 24 Z" fill="url(#brass)" class="t"/>
+    <rect x="-20" y="-6" width="36" height="12" rx="3" fill="#4a2e17" class="t"/>
+    <path d="M-16 -6 l4 12 M-8 -6 l4 12 M0 -6 l4 12 M8 -6 l4 12" stroke="#2a180a" stroke-width="1.5"/>
+    <circle cx="-25" cy="0" r="8" fill="url(#brass)" class="t"/>
+    <circle cx="-27" cy="-3" r="2.5" fill="#fff" opacity=".6"/>
+  </g>
+  <!-- fist (gloved) -->
+  <path d="M328 220 C336 216 350 218 354 226 C358 234 356 246 348 250 C340 254 330 250 326 244 C322 236 322 226 328 220 Z" fill="url(#leather)" class="o"/>
+  <path d="M340 220 C346 224 348 232 346 242 M348 222 C352 228 352 236 350 246" stroke="#2a1a0c" stroke-width="1.8" fill="none"/>
+  <path d="M330 226 q4 -6 12 -6" class="hl" opacity=".4"/>
+</g>
+</svg>

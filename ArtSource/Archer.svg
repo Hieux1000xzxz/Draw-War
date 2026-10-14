@@ -1,0 +1,184 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="512" height="512" viewBox="0 0 512 512">
+<defs>
+  <style>
+    .o{stroke:#1c1712;stroke-width:4;stroke-linejoin:round;stroke-linecap:round}
+    .t{stroke:#1c1712;stroke-width:3;stroke-linejoin:round;stroke-linecap:round}
+    .f{fill:none;stroke:#2a2018;stroke-width:2;stroke-linecap:round;opacity:.5}
+    .hl{fill:none;stroke:#fff;stroke-width:2.5;stroke-linecap:round;opacity:.4}
+    .st{fill:none;stroke:#e6cfa6;stroke-width:1.2;stroke-dasharray:3 3;opacity:.7}
+  </style>
+  <linearGradient id="hood" x1="0" y1="0" x2="1" y2="1">
+    <stop offset="0" stop-color="#8f9466"/><stop offset=".55" stop-color="#626842"/><stop offset="1" stop-color="#363a23"/>
+  </linearGradient>
+  <linearGradient id="cloth" x1="0" y1="0" x2="0" y2="1">
+    <stop offset="0" stop-color="#7f8458"/><stop offset="1" stop-color="#4b4f31"/>
+  </linearGradient>
+  <linearGradient id="linen" x1="0" y1="0" x2="0" y2="1">
+    <stop offset="0" stop-color="#e6dcc0"/><stop offset=".6" stop-color="#c3b591"/><stop offset="1" stop-color="#8f8262"/>
+  </linearGradient>
+  <linearGradient id="leather" x1="0" y1="0" x2="1" y2="1">
+    <stop offset="0" stop-color="#ad7944"/><stop offset=".6" stop-color="#744a26"/><stop offset="1" stop-color="#432814"/>
+  </linearGradient>
+  <linearGradient id="leatherD" x1="0" y1="0" x2="1" y2="1">
+    <stop offset="0" stop-color="#7f5530"/><stop offset="1" stop-color="#36210f"/>
+  </linearGradient>
+  <linearGradient id="jerkin" x1="0" y1="0" x2="1" y2="0">
+    <stop offset="0" stop-color="#5a3a1e"/><stop offset=".3" stop-color="#9c6a3c"/><stop offset=".7" stop-color="#7a4f2a"/><stop offset="1" stop-color="#432913"/>
+  </linearGradient>
+  <linearGradient id="hose" x1="0" y1="0" x2="1" y2="0">
+    <stop offset="0" stop-color="#776c5a"/><stop offset="1" stop-color="#433b31"/>
+  </linearGradient>
+  <linearGradient id="hoseD" x1="0" y1="0" x2="1" y2="0">
+    <stop offset="0" stop-color="#5c5346"/><stop offset="1" stop-color="#312b23"/>
+  </linearGradient>
+  <linearGradient id="skin" x1="0" y1="0" x2="1" y2="1">
+    <stop offset="0" stop-color="#f0c39b"/><stop offset=".6" stop-color="#d39a72"/><stop offset="1" stop-color="#a26a48"/>
+  </linearGradient>
+  <linearGradient id="bow" x1="0" y1="0" x2="1" y2="0">
+    <stop offset="0" stop-color="#6a4320"/><stop offset=".5" stop-color="#c79a5e"/><stop offset="1" stop-color="#7a4f26"/>
+  </linearGradient>
+  <linearGradient id="steel" x1="0" y1="0" x2="1" y2="1">
+    <stop offset="0" stop-color="#eef1f2"/><stop offset=".5" stop-color="#a3abb1"/><stop offset="1" stop-color="#4f575e"/>
+  </linearGradient>
+  <linearGradient id="brass" x1="0" y1="0" x2="1" y2="1">
+    <stop offset="0" stop-color="#f1d58a"/><stop offset=".5" stop-color="#b58a3a"/><stop offset="1" stop-color="#6b4c1a"/>
+  </linearGradient>
+</defs>
+
+<!-- ============ QUIVER (behind) ============ -->
+<g transform="translate(222 178) rotate(-16)">
+  <!-- arrows sticking out -->
+  <g class="t">
+    <path d="M-12 -86 L-14 -128" stroke="#1c1712" stroke-width="5"/>
+    <path d="M-1 -86 L0 -134" stroke="#1c1712" stroke-width="5"/>
+    <path d="M10 -86 L13 -126" stroke="#1c1712" stroke-width="5"/>
+    <path d="M-12 -86 L-14 -128 M-1 -86 L0 -134 M10 -86 L13 -126" stroke="#c9a46a" stroke-width="2.5"/>
+    <path d="M-14 -122 L-22 -110 L-21 -96 L-13 -104 Z" fill="#d8d0bc"/>
+    <path d="M-14 -122 L-7 -111 L-8 -97 L-13 -104 Z" fill="#a39a86"/>
+    <path d="M0 -128 L-8 -116 L-7 -100 L0 -108 Z" fill="#8a8f6a"/>
+    <path d="M0 -128 L8 -116 L7 -100 L0 -108 Z" fill="#5d6244"/>
+    <path d="M13 -120 L5 -108 L6 -94 L12 -102 Z" fill="#d8d0bc"/>
+    <path d="M13 -120 L21 -109 L20 -95 L12 -102 Z" fill="#a39a86"/>
+  </g>
+  <path d="M-22 -88 L22 -88 L18 80 C10 88 -10 88 -18 80 Z" fill="url(#leather)" class="o"/>
+  <path d="M-24 -92 L24 -92 L23 -76 L-23 -76 Z" fill="url(#leatherD)" class="t"/>
+  <path d="M-21 -40 L21 -40 M-20 40 L20 40" stroke="#1c1712" stroke-width="3"/>
+  <path d="M-21 -36 L21 -36 M-20 44 L20 44" class="st"/>
+  <path d="M-14 -70 L-12 70" class="hl" opacity=".3" stroke-width="3"/>
+</g>
+
+<!-- ============ LEGS ============ -->
+<!-- back leg -->
+<g>
+  <path d="M236 296 L270 300 C264 336 250 370 240 398 L206 392 C210 360 222 328 236 296 Z" fill="url(#hoseD)" class="o"/>
+  <path d="M203 392 L242 398 C234 424 216 452 210 472 C222 482 234 488 236 496 C236 501 230 502 222 502 L184 502 C177 496 177 484 182 474 C178 446 190 418 203 392 Z" fill="url(#leatherD)" class="o"/>
+  <path d="M200 390 L246 396 L240 416 L232 410 L222 418 L214 410 L198 412 Z" fill="#6a4524" class="t"/>
+  <path d="M186 488 L232 492" class="f"/>
+  <path d="M200 420 q-8 26 -10 50" class="hl" opacity=".25"/>
+</g>
+<!-- front leg -->
+<g>
+  <path d="M260 298 L296 296 C308 330 320 364 326 394 L292 400 C286 366 272 332 260 298 Z" fill="url(#hose)" class="o"/>
+  <path d="M276 320 q12 30 20 70" class="f" opacity=".3"/>
+  <path d="M290 398 L328 392 C332 420 334 448 336 470 C350 478 368 486 372 494 C373 500 368 502 360 502 L312 502 C306 494 306 482 310 474 C300 450 292 424 290 398 Z" fill="url(#leather)" class="o"/>
+  <path d="M286 396 L332 390 L334 410 L322 406 L314 414 L304 406 L290 412 Z" fill="#8a5a2e" class="t"/>
+  <path d="M298 420 q2 30 14 52" class="hl" opacity=".3"/>
+  <path d="M314 488 L366 492" class="f"/>
+  <path d="M326 420 L330 466" class="st"/>
+</g>
+
+<!-- ============ TORSO ============ -->
+<g>
+  <!-- tunic skirt -->
+  <path d="M230 264 L298 264 C308 286 316 308 320 332 C302 338 290 334 278 338 C264 334 250 340 236 336 C224 340 214 336 206 334 C212 310 220 286 230 264 Z" fill="url(#cloth)" class="o"/>
+  <path d="M244 280 q-8 28 -10 54 M264 282 q0 28 -2 54 M282 280 q8 28 12 56 M300 290 q6 20 10 42" class="f"/>
+  <path d="M232 282 q-6 22 -12 44" class="hl" opacity=".25"/>
+  <!-- jerkin -->
+  <path d="M226 154 C244 146 262 148 268 150 C280 146 298 146 308 156 C312 188 306 234 300 276 L284 290 L272 278 L258 292 L244 278 L230 288 C222 240 218 190 226 154 Z" fill="url(#jerkin)" class="o"/>
+  <path d="M265 168 L265 262" stroke="#2a1a0c" stroke-width="2.5"/>
+  <path d="M259 176 L271 186 M271 176 L259 186 M259 196 L271 206 M271 196 L259 206 M259 216 L271 226 M271 216 L259 226 M259 236 L271 246 M271 236 L259 246" stroke="#d8c39a" stroke-width="1.6"/>
+  <path d="M232 166 q-6 50 4 108 M302 166 q2 50 -6 104" class="st"/>
+  <path d="M236 170 q-4 40 0 80" class="hl" opacity=".3"/>
+  <!-- quiver strap -->
+  <path d="M226 158 L240 152 L306 248 L296 258 Z" fill="url(#leatherD)" class="t"/>
+  <path d="M234 160 L300 252" class="st"/>
+  <!-- belt -->
+  <path d="M228 258 L302 256 L302 272 L228 274 Z" fill="url(#leather)" class="t"/>
+  <rect x="258" y="254" width="14" height="21" rx="2" fill="url(#brass)" class="t"/>
+  <rect x="262" y="259" width="6" height="11" fill="#4a2e17"/>
+  <!-- knife at hip -->
+  <path d="M290 270 L298 270 L302 312 C300 318 294 318 292 312 Z" fill="url(#leatherD)" class="t"/>
+  <path d="M290 270 L298 270 L297 254 L291 254 Z" fill="#5a3a1e" class="t"/>
+</g>
+
+<!-- ============ UPPER ARMS (under capelet) ============ -->
+<!-- draw arm upper (pulled back) -->
+<path d="M244 150 C224 134 200 116 182 108 C166 104 154 116 158 130 C182 146 212 168 234 184 Z" fill="url(#linen)" class="o"/>
+<path d="M196 124 q-8 8 -10 20 M214 138 q-8 8 -10 20 M178 108 q8 10 4 30" class="f"/>
+<!-- bow arm upper -->
+<path d="M290 150 C312 144 334 144 354 146 L356 170 C334 172 312 176 294 180 Z" fill="url(#linen)" class="o"/>
+<path d="M322 148 q-4 10 0 24 M340 148 q-3 10 0 22" class="f"/>
+
+<!-- ============ HOOD + CAPELET ============ -->
+<g>
+  <!-- face -->
+  <path d="M266 78 L292 78 C294 82 296 86 295 90 C298 95 302 98 305 102 C303 105 299 105 296 106 C298 108 298 110 296 112 C298 114 298 116 296 118 C297 122 295 126 290 128 C283 131 274 129 268 124 C262 118 260 104 262 92 Z" fill="url(#skin)" class="o"/>
+  <path d="M268 112 C274 120 282 124 290 126" stroke="#8a5a3c" stroke-width="1.5" fill="none" opacity=".5"/>
+  <path d="M282 93 q5 -3 9 0 q-4 3 -9 0 Z" fill="#fff" stroke="#1c1712" stroke-width="1.5"/>
+  <circle cx="288.5" cy="93" r="1.8" fill="#2a1d14"/>
+  <path d="M279 88 q7 -4 15 -1" stroke="#4a3220" stroke-width="3" fill="none" stroke-linecap="round"/>
+  <path d="M298 101 q-3 4 -1 6" stroke="#8a5a3c" stroke-width="1.5" fill="none"/>
+  <path d="M292 113 l4 0" stroke="#7a3f2c" stroke-width="1.5"/>
+  <path d="M276 104 q6 6 2 14" stroke="#a26a48" stroke-width="2" fill="none" opacity=".5"/>
+  <!-- hood shadow on face -->
+  <path d="M266 78 L300 74 C292 80 282 82 274 86 C270 96 270 112 274 124 L268 124 C262 112 262 92 266 78 Z" fill="#1c1712" opacity=".35"/>
+  <!-- hood & capelet -->
+  <path d="M302 72 C300 50 286 38 262 38 C238 38 222 58 224 88 C226 110 230 126 232 140 C222 148 212 160 208 176 C206 186 214 192 222 188 C228 197 238 197 244 190 C250 199 262 199 268 190 C274 199 286 199 292 190 C298 197 308 195 310 186 C312 172 306 156 296 146 C294 140 294 134 292 130 C284 134 272 132 266 124 C260 112 262 92 270 82 C280 76 292 74 302 72 Z" fill="url(#hood)" class="o"/>
+  <path d="M296 70 C292 54 280 46 262 46" stroke="#1c1712" stroke-width="2" fill="none" opacity=".5"/>
+  <path d="M240 54 C232 64 230 80 232 96" class="hl" stroke-width="4" opacity=".35"/>
+  <path d="M246 60 q-6 30 4 62 M236 118 q4 20 -6 46 M256 150 q2 20 -4 40 M280 150 q4 20 0 40 M300 160 q4 14 2 28" class="f"/>
+  <path d="M222 188 C228 197 238 197 244 190 C250 199 262 199 268 190 C274 199 286 199 292 190 C298 197 308 195 310 186" stroke="#c7c49a" stroke-width="1.2" stroke-dasharray="3 3" fill="none" opacity=".6" transform="translate(0 -5)"/>
+</g>
+
+<!-- ============ BOW + STRING ============ -->
+<path d="M387 24 L298 146 L387 284" fill="none" stroke="#1c1712" stroke-width="3.6" stroke-linejoin="round"/>
+<path d="M387 24 L298 146 L387 284" fill="none" stroke="#efe6cc" stroke-width="1.6" stroke-linejoin="round"/>
+
+<!-- bow arm forearm + bracer -->
+<g>
+  <path d="M352 146 L402 144 L404 166 L352 172 Z" fill="url(#skin)" class="o"/>
+  <path d="M362 143 L400 141 L402 168 L362 172 Z" fill="url(#leather)" class="t"/>
+  <path d="M370 146 L376 168 M376 146 L370 168 M384 145 L390 168 M390 145 L384 168" stroke="#e0c79a" stroke-width="1.3"/>
+  <path d="M365 147 L398 145" class="hl" opacity=".35"/>
+</g>
+
+<path d="M386 20 C418 60 430 110 426 150 C430 194 418 246 386 290 L380 286 C410 244 420 194 417 150 C420 110 410 62 380 24 Z" fill="url(#bow)" class="t"/>
+<path d="M382 16 L390 20 L386 30 L378 26 Z M378 286 L386 284 L388 294 L380 296 Z" fill="#e8dfc8" class="t" stroke-width="2"/>
+<path d="M396 50 q16 40 20 80 M396 252 q16 -30 20 -70" class="hl" opacity=".35"/>
+<path d="M416 136 L428 136 L429 170 L417 170 Z" fill="url(#leatherD)" class="t"/>
+
+<!-- ============ ARROW ============ -->
+<g>
+  <path d="M290 147 L440 148" stroke="#1c1712" stroke-width="5" stroke-linecap="round"/>
+  <path d="M290 147 L440 148" stroke="#d7b07a" stroke-width="2.5" stroke-linecap="round"/>
+  <path d="M438 141 L462 148.5 L438 156 L442 148.5 Z" fill="url(#steel)" class="t" stroke-width="2.5"/>
+  <path d="M304 147 L314 136 L338 137 L330 147 Z" fill="#d8d0bc" class="t" stroke-width="2"/>
+  <path d="M304 148 L314 159 L338 158 L330 148 Z" fill="#a39a86" class="t" stroke-width="2"/>
+</g>
+
+<!-- bow fist -->
+<path d="M400 140 C410 134 422 136 428 144 L430 164 C426 172 412 174 402 168 Z" fill="url(#skin)" class="o"/>
+<path d="M410 140 C414 148 414 160 410 170 M418 139 C421 148 421 160 418 171" stroke="#8a5a3c" stroke-width="1.6" fill="none"/>
+
+<!-- ============ DRAW FOREARM + HAND ============ -->
+<g>
+  <path d="M168 108 C204 116 242 128 272 136 L270 160 C236 156 196 146 160 136 C150 128 156 112 168 108 Z" fill="url(#skin)" class="o"/>
+  <path d="M162 120 q-4 8 0 14" stroke="#a26a48" stroke-width="2" fill="none" opacity=".6"/>
+  <path d="M180 114 q40 10 88 22" class="hl" opacity=".35"/>
+  <path d="M200 146 q34 8 66 10" stroke="#a26a48" stroke-width="2" fill="none" opacity=".5"/>
+  <!-- shooting glove hand -->
+  <path d="M266 134 C280 128 298 130 304 139 C308 148 306 158 298 162 C286 166 272 163 266 158 Z" fill="url(#leather)" class="o"/>
+  <path d="M286 133 C292 140 292 152 288 162 M296 135 C300 142 300 152 297 160" stroke="#2a1a0c" stroke-width="1.8" fill="none"/>
+  <path d="M270 140 q6 -6 16 -6" class="hl" opacity=".4"/>
+</g>
+</svg>
