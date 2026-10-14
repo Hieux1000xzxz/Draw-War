@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.InputSystem.UI;
@@ -51,11 +52,10 @@ namespace ArtWar
 
         Camera cam;
         DrawingPad pad;
-        Text kindText, hintText, statsText, inkText, toastText, phaseText, countText, assistLabel;
+        TMP_Text kindText, hintText, statsText, inkText, toastText, phaseText, countText, assistLabel;
         RectTransform inkFill;
         GameObject startButton;
         float toastUntil;
-        Font font;
 
         // Prototype convenience: pressing Play in any scene (and reloading it) starts the battle.
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.AfterSceneLoad)]
@@ -518,7 +518,7 @@ namespace ArtWar
         // ---------------------------------------------------------------- castle upgrades
 
         float inkGain, inkGainUntil;
-        Text upgradeLabel;
+        TMP_Text upgradeLabel;
         Image upgradeImage;
 
         void OnUpgradeClicked()
@@ -566,7 +566,7 @@ namespace ArtWar
             }
             float cost = DoodleUnit.UpgradeCost(next);
             upgradeLabel.text = Loc.T($"NÂNG CẤP THÀNH → cấp {next}  ({cost:0} mực)", $"UPGRADE CASTLE → level {next}  ({cost:0} ink)") +
-                                $"\n<size=15>{DoodleUnit.UpgradeInfo(next)}</size>";
+                                $"\n<size=68%>{DoodleUnit.UpgradeInfo(next)}</size>";
             upgradeImage.color = ink >= cost ? new Color(0.3f, 0.45f, 0.75f) : new Color(0.35f, 0.35f, 0.42f);
         }
 
@@ -600,7 +600,7 @@ namespace ArtWar
                 kindText.color = Color.white;
                 hintText.text = Loc.T("Game nhìn hình để biết đó là lính gì. Cách vẽ từng loại: xem Sổ tay quân ở màn hình chính", "The game reads your drawing to tell which unit it is. How to draw each one: see the Unit Handbook on the title screen");
                 statsText.text = Loc.T("Vẽ xong bấm <b>Hóa thật!</b>\n", "When done, press <b>Summon!</b>\n") +
-                                 Loc.T("<size=17>Viền màu: chân (xanh lá) · vũ khí (đỏ) · súng (cam) · khiên (xanh dương) · cánh (lơ) · bánh (vàng)</size>", "<size=17>Outlines: legs (green) · weapon (red) · gun (orange) · shield (blue) · wings (cyan) · wheels (yellow)</size>");
+                                 Loc.T("<size=75%>Viền màu: chân (xanh lá) · vũ khí (đỏ) · súng (cam) · khiên (xanh dương) · cánh (lơ) · bánh (vàng)</size>", "<size=75%>Outlines: legs (green) · weapon (red) · gun (orange) · shield (blue) · wings (cyan) · wheels (yellow)</size>");
                 return;
             }
             kindText.text = DoodleAnalyzer.DisplayName(s);
@@ -681,10 +681,6 @@ namespace ArtWar
 
         void BuildUI()
         {
-            // a round hand-written font with full Vietnamese accents (Pangolin, SIL Open Font License)
-            font = Resources.Load<Font>("Fonts/Pangolin-Regular");
-            if (font == null) font = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
-
             if (FindAnyObjectByType<EventSystem>() == null)
             {
                 var es = new GameObject("EventSystem");
@@ -692,163 +688,53 @@ namespace ArtWar
                 es.AddComponent<InputSystemUIInputModule>();
             }
 
-            var canvasGo = new GameObject("UI");
-            var canvas = canvasGo.AddComponent<Canvas>();
-            canvas.renderMode = RenderMode.ScreenSpaceOverlay;
-            var scaler = canvasGo.AddComponent<CanvasScaler>();
-            scaler.uiScaleMode = CanvasScaler.ScaleMode.ScaleWithScreenSize;
-            scaler.referenceResolution = new Vector2(1920f, 1080f);
-            scaler.matchWidthOrHeight = 1f; // layout is sized by screen height
-            canvasGo.AddComponent<GraphicRaycaster>();
-            var root = canvasGo.transform;
+            // The HUD comes from Resources/UI/HUD.prefab (edit it there); without the prefab it is laid out in code.
+            var prefab = Resources.Load<HudView>("UI/HUD");
+            hud = prefab != null ? Instantiate(prefab) : HudView.Build();
+            hud.name = "HUD";
 
-            const float left = 20f, width = 620f;
+            kindText = hud.kindText;
+            hintText = hud.hintText;
+            statsText = hud.statsText;
+            inkText = hud.inkText;
+            inkFill = hud.inkFill;
+            toastText = hud.toastText;
+            phaseText = hud.phaseText;
+            countText = hud.countText;
+            assistLabel = hud.assistLabel;
+            startButton = hud.startButton.gameObject;
+            upgradeLabel = hud.upgradeLabel;
+            upgradeImage = hud.upgradeButton.GetComponent<Image>();
 
-            // Recognition + stats box
-            var statsBox = MakePanel(root, new Vector2(left, 785f), new Vector2(width, 280f), new Color(0f, 0f, 0f, 0.5f));
-            kindText = MakeLabel(statsBox, new Vector2(10f, 215f), new Vector2(width - 20f, 56f), 40, TextAnchor.MiddleCenter, Color.white);
-            kindText.fontStyle = FontStyle.Bold;
-            kindText.resizeTextForBestFit = true; // long names ("LÍNH KHIÊN SPARTAN") shrink to fit
-            kindText.resizeTextMinSize = 18;
-            kindText.resizeTextMaxSize = 40;
-            kindText.horizontalOverflow = HorizontalWrapMode.Wrap;
-            kindText.verticalOverflow = VerticalWrapMode.Truncate;
-            hintText = MakeLabel(statsBox, new Vector2(10f, 140f), new Vector2(width - 20f, 70f), 22, TextAnchor.MiddleCenter,
-                new Color(0.75f, 0.95f, 1f));
-            hintText.resizeTextForBestFit = true; // a long hint shrinks rather than spilling into the stats
-            hintText.resizeTextMinSize = 13;
-            hintText.resizeTextMaxSize = 22;
-            hintText.verticalOverflow = VerticalWrapMode.Truncate;
-            statsText = MakeLabel(statsBox, new Vector2(10f, 8f), new Vector2(width - 20f, 128f), 21, TextAnchor.MiddleCenter,
-                Color.white);
-
-
-            // The page
-            var frame = MakePanel(root, new Vector2(left, 170f), new Vector2(width, 600f), new Color(0.24f, 0.17f, 0.12f));
-            var padRect = MakeRect(frame, "Drawing Pad", new Vector2(10f, 10f), new Vector2(width - 20f, 580f));
-            padRect.gameObject.AddComponent<RawImage>();
-            pad = padRect.gameObject.AddComponent<DrawingPad>();
+            pad = hud.pad.gameObject.AddComponent<DrawingPad>();
             pad.TryConsumeInk = TryConsumeInk;
             pad.RefundInk = RefundInk;
             pad.Changed += RefreshStats;
-            MakeLabel(frame, new Vector2(16f, 560f), new Vector2(width - 32f, 34f), 18, TextAnchor.MiddleLeft,
-                new Color(0.45f, 0.45f, 0.55f)).text = Loc.T("Mỗi lần chỉ vẽ MỘT lính, rồi bấm \"Hóa thật!\"", "Draw ONE unit at a time, then press \"Summon!\"");
 
-            // Ink bar
-            var inkBg = MakePanel(root, new Vector2(left, 120f), new Vector2(width, 40f), new Color(0.15f, 0.12f, 0.1f));
-            inkFill = MakePanel(inkBg, Vector2.zero, Vector2.zero, new Color(0.2f, 0.35f, 0.8f));
-            inkFill.anchorMin = Vector2.zero;
-            inkFill.anchorMax = Vector2.one;
-            inkFill.offsetMin = inkFill.offsetMax = Vector2.zero;
-            inkText = MakeLabel(inkBg, Vector2.zero, new Vector2(width, 40f), 22, TextAnchor.MiddleCenter, Color.white);
-
-            // Buttons: ink colors, undo, clear, assist, summon
-            float x = left;
-            foreach (InkColor c in System.Enum.GetValues(typeof(InkColor)))
+            for (int i = 0; i < hud.colorButtons.Length; i++)
             {
-                var color = c;
-                MakeButton(root, new Vector2(x, 25f), new Vector2(64f, 80f), InkPalette.Get(c), "", () => pad.InkColor = color);
-                x += 70f;
+                var color = (InkColor)i;
+                OnClick(hud.colorButtons[i], () => pad.InkColor = color);
             }
-            MakeButton(root, new Vector2(x, 25f), new Vector2(88f, 80f), new Color(0.45f, 0.42f, 0.4f), Loc.T("Hoàn tác", "Undo"), pad.Undo)
-                .GetComponentInChildren<Text>().fontSize = 20;
-            x += 94f;
-            MakeButton(root, new Vector2(x, 25f), new Vector2(80f, 80f), new Color(0.55f, 0.5f, 0.45f), Loc.T("Xóa", "Clear"),
-                () => pad.Clear(true));
-            x += 86f;
-            assistLabel = MakeButton(root, new Vector2(x, 25f), new Vector2(96f, 80f), new Color(0.3f, 0.55f, 0.5f),
-                Loc.T("Hỗ trợ\nBẬT", "Assist\nON"), OnAssistClicked).GetComponentInChildren<Text>();
-            assistLabel.fontSize = 20;
-            x += 102f;
-            MakeButton(root, new Vector2(x, 25f), new Vector2(left + width - x, 80f),
-                new Color(0.95f, 0.65f, 0.15f), Loc.T("Hóa thật!", "Summon!"), OnSummonClicked);
-
-            toastText = MakeLabel(root, new Vector2(left, 710f), new Vector2(width, 50f), 30, TextAnchor.MiddleCenter,
-                new Color(1f, 0.35f, 0.25f));
-            toastText.fontStyle = FontStyle.Bold;
-
-            // Phase banner over the battlefield
-            var banner = MakePanel(root, Vector2.zero, new Vector2(BannerWidth, 150f), new Color(0f, 0f, 0f, 0.45f));
-            TopCenter(banner, new Vector2(UiColumnWidth * 0.5f, -12f));
-            phaseText = MakeLabel(banner, new Vector2(0f, 88f), new Vector2(BannerWidth, 58f), 44, TextAnchor.MiddleCenter, Color.white);
-            phaseText.fontStyle = FontStyle.Bold;
-            countText = MakeLabel(banner, new Vector2(BannerWidth * 0.5f - 95f, 8f), new Vector2(190f, 76f), 22,
-                TextAnchor.MiddleCenter, new Color(1f, 0.92f, 0.75f));
-            BuildCastleBars(banner);
-            var start = MakeButton(root, Vector2.zero, new Vector2(320f, 70f), new Color(0.85f, 0.25f, 0.2f), Loc.T("Bắt đầu chiến!", "Start battle!"),
-                StartWar);
-            TopCenter((RectTransform)start.transform, new Vector2(UiColumnWidth * 0.5f, -172f));
-            startButton = start.gameObject;
-
-            // Castle upgrade, on the battlefield next to our castle: usable while preparing and during the battle
-            var upgrade = MakeButton(root, new Vector2(UiColumnWidth + 10f, 20f), new Vector2(430f, 86f),
-                new Color(0.3f, 0.45f, 0.75f), " ", OnUpgradeClicked);
-            upgradeImage = upgrade.GetComponent<Image>();
-            upgradeLabel = upgrade.GetComponentInChildren<Text>();
-            upgradeLabel.fontSize = 21;
-            upgradeLabel.supportRichText = true;
+            OnClick(hud.undoButton, pad.Undo);
+            OnClick(hud.clearButton, () => pad.Clear(true));
+            OnClick(hud.assistButton, OnAssistClicked);
+            OnClick(hud.summonButton, OnSummonClicked);
+            OnClick(hud.startButton, StartWar);
+            OnClick(hud.upgradeButton, OnUpgradeClicked);
+            OnClick(hud.pauseButton, () => ShowPage(Page.Pause));
 
             RefreshInkBar();
         }
 
-        static RectTransform MakeRect(Transform parent, string name, Vector2 pos, Vector2 size)
-        {
-            var go = new GameObject(name, typeof(RectTransform));
-            var rt = (RectTransform)go.transform;
-            rt.SetParent(parent, false);
-            rt.anchorMin = rt.anchorMax = rt.pivot = Vector2.zero;
-            rt.anchoredPosition = pos;
-            rt.sizeDelta = size;
-            return rt;
-        }
+        HudView hud;
 
-        static void Center(RectTransform rt, Vector2 offset)
+        /// <summary>Every button clicks, then does its job.</summary>
+        static void OnClick(Button button, UnityEngine.Events.UnityAction action)
         {
-            rt.anchorMin = rt.anchorMax = rt.pivot = new Vector2(0.5f, 0.5f);
-            rt.anchoredPosition = offset;
-        }
-
-        static void TopCenter(RectTransform rt, Vector2 offset)
-        {
-            rt.anchorMin = rt.anchorMax = rt.pivot = new Vector2(0.5f, 1f);
-            rt.anchoredPosition = offset;
-        }
-
-        static RectTransform MakePanel(Transform parent, Vector2 pos, Vector2 size, Color color)
-        {
-            var rt = MakeRect(parent, "Panel", pos, size);
-            rt.gameObject.AddComponent<Image>().color = color;
-            return rt;
-        }
-
-        Text MakeLabel(Transform parent, Vector2 pos, Vector2 size, int fontSize, TextAnchor align, Color color)
-        {
-            var rt = MakeRect(parent, "Label", pos, size);
-            var t = rt.gameObject.AddComponent<Text>();
-            t.font = font;
-            t.fontSize = fontSize;
-            t.alignment = align;
-            t.color = color;
-            t.raycastTarget = false;
-            t.horizontalOverflow = HorizontalWrapMode.Wrap;
-            t.verticalOverflow = VerticalWrapMode.Overflow;
-            return t;
-        }
-
-        Button MakeButton(Transform parent, Vector2 pos, Vector2 size, Color color, string label, UnityEngine.Events.UnityAction onClick)
-        {
-            var rt = MakePanel(parent, pos, size, color);
-            rt.name = "Button " + label;
-            var b = rt.gameObject.AddComponent<Button>();
-            b.onClick.AddListener(() => Sfx.Play(Sound.Click, 0.5f));
-            b.onClick.AddListener(onClick);
-            if (!string.IsNullOrEmpty(label))
-            {
-                var t = MakeLabel(rt, Vector2.zero, size, 28, TextAnchor.MiddleCenter, Color.white);
-                t.text = label;
-                t.fontStyle = FontStyle.Bold;
-            }
-            return b;
+            if (button == null) return;
+            button.onClick.AddListener(() => Sfx.Play(Sound.Click, 0.5f));
+            button.onClick.AddListener(action);
         }
     }
 }
