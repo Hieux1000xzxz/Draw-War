@@ -51,6 +51,7 @@ namespace ArtWar
             if (instance != null) return;
             var go = new GameObject("Sfx");
             instance = go.AddComponent<Sfx>();
+            DontDestroyOnLoad(go); // sounds and music are made once and keep playing across scene reloads
         }
 
         void Awake()

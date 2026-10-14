@@ -33,6 +33,9 @@ namespace ArtWar
 
         public static readonly Color SkyColor = new Color(0.74f, 0.88f, 0.98f);
 
+        /// <summary>Where the sun hangs over the sea (the boats keep clear of it).</summary>
+        public const float SunX = 22f;
+
         public static void Build(Transform parent, float fieldHalfX, float fieldHalfZ)
         {
             var root = new GameObject("Scenery").transform;
@@ -41,17 +44,18 @@ namespace ArtWar
             float R(float a, float b) => a + (float)rng.NextDouble() * (b - a);
 
             BuildGrass(root);
+            Waterscape.Build(root, rng);
 
             // far hills along the horizon
             for (int i = 0; i < 7; i++)
             {
                 float x = -42f + i * 14f + R(-3f, 3f);
-                Place(root, HillShape(rng), i % 2 == 0 ? FarHill : Hill, R(3.5f, 5f), new Vector3(x, -0.3f, R(29f, 32f)), 0.95f);
+                Place(root, HillShape(rng), i % 2 == 0 ? FarHill : Hill, R(3.5f, 5f), new Vector3(x, -0.3f, R(27f, 29.5f)), 1f); // solid: the sea stays behind them
             }
 
             // sun and clouds above the hills
             var sun = DoodleBuilder.BuildScenery(SunShape(), Sun, 2.2f, null, 0.95f, true);
-            Put(root, sun.root, new Vector3(20f, 3.4f, 33f));
+            Put(root, sun.root, new Vector3(SunX, 4.6f, 33f));
             for (int i = 0; i < 5; i++)
             {
                 var cloud = DoodleBuilder.BuildScenery(CloudShape(rng), Cloud, R(2f, 3f), null, 0.9f);
@@ -80,7 +84,7 @@ namespace ArtWar
             {
                 bool front = i < 16;
                 float x = front ? R(-20f, 20f) : (i % 2 == 0 ? -1f : 1f) * R(fieldHalfX + 4.5f, fieldHalfX + 9f);
-                float z = front ? -(fieldHalfZ + R(3.6f, 6.5f)) : R(-fieldHalfZ - 2f, fieldHalfZ + 2f);
+                float z = front ? Waterscape.RiverZ - R(2f, 5.5f) : R(-fieldHalfZ - 2f, fieldHalfZ + 2f);
                 var pos = new Vector3(x, 0f, z);
                 if (rng.NextDouble() < 0.55) Flower(root, pos, R(0.4f, 0.55f), Petals[rng.Next(Petals.Length)]);
                 else Place(root, TuftShape(rng), DarkLeaf, R(0.3f, 0.45f), pos, 0.9f);
@@ -124,8 +128,47 @@ namespace ArtWar
             // the front lawn: low patches of flowers, tulips and toadstools that don't hide the battle
             for (int i = 0; i < 14; i++)
             {
-                var pos = new Vector3(R(-22f, 22f), 0f, -(fieldHalfZ + R(3.9f, 8f)));
+                var pos = new Vector3(R(-22f, 22f), 0f, Waterscape.RiverZ - R(2.2f, 6f));
                 if (rng.NextDouble() < 0.3) Toadstool(root, pos, R(0.45f, 0.6f));
+                else FlowerPatch(root, pos, rng, 3);
+            }
+
+            // the big front lawn beyond the river, filled so panning the camera never finds a bare patch:
+            // grass tufts everywhere, flower patches, bushes and the odd toadstool
+            for (int i = 0; i < 150; i++)
+            {
+                // denser close to the river, where the camera looks most
+                float depth = i < 90 ? R(1.9f, 6f) : R(6f, 14f);
+                var pos = new Vector3(R(-32f, 32f), 0f, Waterscape.RiverZ - depth);
+                Place(root, TuftShape(rng), i % 3 == 0 ? Leaf : DarkLeaf, R(0.3f, 0.5f), pos, 0.9f);
+            }
+
+            // beside the page, past both castles, down to the river
+            foreach (float side in new[] { -1f, 1f })
+            {
+                for (int i = 0; i < 18; i++)
+                {
+                    var pos = new Vector3(side * R(fieldHalfX + 3.6f, fieldHalfX + 14f), 0f, R(Waterscape.RiverZ + 1.8f, fieldHalfZ + 2f));
+                    if (i % 3 == 0) FlowerPatch(root, pos, rng, 3);
+                    else Place(root, TuftShape(rng), i % 2 == 0 ? Leaf : DarkLeaf, R(0.3f, 0.5f), pos, 0.9f);
+                }
+            }
+            for (int i = 0; i < 26; i++)
+            {
+                var pos = new Vector3(R(-30f, 30f), 0f, Waterscape.RiverZ - R(2.5f, 13f));
+                switch (rng.Next(6))
+                {
+                    case 0: Place(root, BushShape(rng), rng.NextDouble() < 0.5 ? Leaf : DarkLeaf, R(0.45f, 0.7f), pos, 0.9f); break;
+                    case 1: Toadstool(root, pos, R(0.45f, 0.6f)); break;
+                    default: FlowerPatch(root, pos, rng, 3 + rng.Next(3)); break;
+                }
+            }
+
+            // the far bank of the river: more flowers and a few bushes
+            for (int i = 0; i < 12; i++)
+            {
+                var pos = new Vector3(R(-24f, 24f), 0f, Waterscape.RiverZ - R(2.2f, 4.5f));
+                if (rng.NextDouble() < 0.3) Place(root, BushShape(rng), i % 2 == 0 ? Leaf : DarkLeaf, R(0.35f, 0.5f), pos, 0.9f);
                 else FlowerPatch(root, pos, rng, 3);
             }
         }
@@ -297,10 +340,10 @@ namespace ArtWar
             grass.name = "Grass";
             Object.Destroy(grass.GetComponent<Collider>());
             grass.transform.SetParent(root, false);
-            grass.transform.position = new Vector3(0f, -0.02f, 6f);
-            grass.transform.localScale = new Vector3(10f, 1f, 5f); // ends at z = 31, behind the hills
+            grass.transform.position = new Vector3(0f, -0.02f, -5f);
+            grass.transform.localScale = new Vector3(12f, 1f, 7.2f); // from far in front of the camera to z = 31, behind the hills
             var mat = DoodleBuilder.TextureMaterial(GrassTexture());
-            mat.mainTextureScale = new Vector2(14f, 9f);
+            mat.mainTextureScale = new Vector2(17f, 13f);
             grass.GetComponent<Renderer>().sharedMaterial = mat;
         }
 

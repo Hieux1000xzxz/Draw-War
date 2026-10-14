@@ -4,7 +4,7 @@ using UnityEngine;
 namespace ArtWar
 {
     public enum UnitKind { Infantry, Cavalry, Archer, Healer, Wall, Turret, Tank, Plane, Jet, Helicopter, Dragon, Rifleman, Robot, Shieldman, Ghost,
-        Grenadier, Catapult, Bat }
+        Grenadier, Catapult, Bat, Spider, Snowman, Balloon }
 
     /// <summary>What a single stroke was recognized as.</summary>
     public enum PartType { None, Leg, Weapon, Shield, Wheel, Wing, Bow, Rotor, Propeller, Cross, Gun, Box, Guard, Bomb }
@@ -31,6 +31,7 @@ namespace ArtWar
         public int legs, weapons, shields, wheels, wings, bows, rotors, propellers, crosses, guns, boxes, guards, bombs;
         public int steepWeapons; // weapons raised steeply (a catapult arm rather than a level barrel)
         public int closedShapes; // closed outlines: body, head, tail, belly... (a real dragon has several)
+        public int outerWeapons; // weapons and bows sticking out of the main body (not lines drawn inside it)
         public float armor; // fraction of incoming damage blocked (shield bearers, upgraded castle walls)
         public int copies;  // how many soldiers the drawing became (kill rewards are shared between them)
 
@@ -70,6 +71,9 @@ namespace ArtWar
                 case UnitKind.Grenadier: return Loc.T("LÍNH NÉM BOM", "BOMBER");
                 case UnitKind.Catapult: return Loc.T("MÁY BẮN ĐÁ", "CATAPULT");
                 case UnitKind.Bat: return Loc.T("DƠI", "BAT");
+                case UnitKind.Spider: return Loc.T("NHỆN", "SPIDER");
+                case UnitKind.Snowman: return Loc.T("NGƯỜI TUYẾT", "SNOWMAN");
+                case UnitKind.Balloon: return Loc.T("KHINH KHÍ CẦU", "HOT-AIR BALLOON");
                 default: return Loc.T("BỘ BINH", "SOLDIER");
             }
         }
@@ -95,6 +99,9 @@ namespace ArtWar
                 case UnitKind.Grenadier: return Loc.T("Ném bom nổ lan qua đầu quân địch. Khắc đám đông, lính khiên", "Lobs bombs over the front line. Beats crowds and shields");
                 case UnitKind.Catapult: return Loc.T("Bắn đá cực xa, nổ lan, phá thành x1.8. Chậm, yếu khi bị áp sát", "Huge range, splash, x1.8 vs castles. Slow, weak up close");
                 case UnitKind.Bat: return Loc.T("Rẻ, bay nhanh, cắn cả lính bay. Vẽ đẹp ra cả đàn", "Cheap, fast flier, bites fliers too. Draw well for a swarm");
+                case UnitKind.Spider: return Loc.T("Bò cực nhanh, cắn độc làm địch chậm lại. Vẽ đẹp ra cả bầy", "Scuttles fast; its venom slows enemies down. Draw well for a swarm");
+                case UnitKind.Snowman: return Loc.T("Ném cầu tuyết từ xa làm địch chậm lại. Rất trâu", "Throws snowballs that slow enemies down. Very tough");
+                case UnitKind.Balloon: return Loc.T("Bay chậm, thả bom nổ lan. Trâu nhưng sợ cung thủ", "Drifts slowly, drops bombs. Tough, but archers bring it down");
                 default: return Loc.T("Đánh gần. Khắc cung thủ, thầy thuốc", "Melee. Beats archers and medics");
             }
         }
@@ -172,6 +179,9 @@ namespace ArtWar
                 case UnitKind.Grenadier: return Loc.T("Bom", "Bombs");
                 case UnitKind.Catapult: return Loc.T("Đá tảng", "Boulders");
                 case UnitKind.Bat: return Loc.T("Răng nanh", "Fangs");
+                case UnitKind.Spider: return Loc.T("Răng độc", "Venom fangs");
+                case UnitKind.Snowman: return Loc.T("Cầu tuyết", "Snowballs");
+                case UnitKind.Balloon: return Loc.T("Bom", "Bombs");
                 case UnitKind.Robot:
                     switch (s.robotMode)
                     {
@@ -256,9 +266,10 @@ namespace ArtWar
             {
                 if (!IsClosed(s)) continue;
                 var sb = StrokeBounds(s.points);
-                if (Mathf.Max(sb.width, sb.height) < size * 0.4f) continue;
+                // a ghost sheet is big and stands fairly tall (a flat plane body with a shaky edge is not one)
+                if (Mathf.Max(sb.width, sb.height) < size * 0.4f || sb.height < sb.width * 0.6f) continue;
                 float hemTop = sb.yMin + sb.height * 0.25f;
-                float bump = sb.height * 0.04f; // ignore tiny hand wobble
+                float bump = sb.height * 0.1f; // real scallops, not a shaky hand on a flat bottom edge
                 int turns = 0, dir = 0;
                 float last = float.NaN;
                 foreach (var p in s.points)
@@ -272,9 +283,45 @@ namespace ArtWar
                     dir = d;
                     last = p.y;
                 }
-                if (turns >= 4) return true; // down-up-down-up...: at least two scallops
+                if (turns >= 3) return true; // down-up-down...: at least a couple of scallops
             }
             return false;
+        }
+
+        /// <summary>
+        /// Two big round outlines stacked one on the other. 1 = a snowman (the bigger ball at the bottom, both round),
+        /// 2 = a hot-air balloon (a big round envelope over a small basket), 0 = neither.
+        /// </summary>
+        static int Stacked(Doodle doodle)
+        {
+            var shapes = new List<(Rect r, float area, bool boxy)>();
+            foreach (var s in doodle.strokes)
+            {
+                if (!IsClosed(s)) continue;
+                var sb = StrokeBounds(s.points);
+                shapes.Add((sb, sb.width * sb.height, IsBoxy(s.points, sb)));
+            }
+            if (shapes.Count < 2) return 0;
+            shapes.Sort((x, y) => y.area.CompareTo(x.area));
+            var big = shapes[0];
+            Rect total = doodle.Bounds;
+            if (Mathf.Max(big.r.width, big.r.height) < Mathf.Max(total.width, total.height) * 0.3f) return 0;
+
+            for (int i = 1; i < shapes.Count; i++)
+            {
+                var other = shapes[i];
+                if (other.area < big.area * 0.08f) break; // eyes, buttons, spots: too small to be a ball or basket
+                bool aligned = Mathf.Abs(other.r.center.x - big.r.center.x) < Mathf.Max(big.r.width, other.r.width) * 0.35f;
+                if (!aligned) continue;
+                bool otherAbove = other.r.center.y > big.r.center.y;
+                Rect upper = otherAbove ? other.r : big.r, lower = otherAbove ? big.r : other.r;
+                // sitting on top of each other, not one inside the other
+                bool stacked = upper.yMin > lower.yMax - lower.height * 0.35f && upper.center.y > lower.yMax - lower.height * 0.1f;
+                if (!stacked) continue;
+                if (otherAbove && !big.boxy && !other.boxy) return 1;  // snowman: big ball below, smaller ball on top
+                if (!otherAbove && !big.boxy && other.area < big.area * 0.45f) return 2; // balloon: envelope over basket
+            }
+            return 0;
         }
 
         public static bool IsClosed(Stroke s)
@@ -309,10 +356,10 @@ namespace ArtWar
                 if (IsClosed(s))
                 {
                     bool small = Mathf.Max(sb.width, sb.height) < size * 0.35f;
-                    bool tube = sb.width > sb.height * 3f && sb.xMax >= b.xMax - w * 0.15f && !touchesGround &&
+                    bool tube = sb.width > sb.height * 2.5f && sb.xMax >= b.xMax - w * 0.15f && !touchesGround &&
                                 sb.center.y > b.yMin + h * 0.35f; // barrels sit up high, not a low cart or hull
                     if (tube) parts[i] = PartType.Gun; // a long closed tube pointing forward: a gun or cannon barrel
-                    else if (Rectangularity(s.points, sb) > 0.8f) parts[i] = PartType.Box; // a drawn box (robot parts, walls, hulls)
+                    else if (IsBoxy(s.points, sb)) parts[i] = PartType.Box; // a drawn box (robot parts, walls, hulls)
                     else parts[i] = small && touchesGround ? PartType.Wheel : PartType.Shield;
                     continue;
                 }
@@ -328,7 +375,7 @@ namespace ArtWar
                         parts[i] = PartType.Rotor;
                     else if (vertical && len < h * 0.8f && sb.xMin >= b.xMax - w * 0.1f)
                         parts[i] = PartType.Propeller;
-                    else if (vertical && touchesGround && len > 0.04f)
+                    else if ((vertical || Mathf.Abs(delta.y) > Mathf.Abs(delta.x) * 0.6f) && touchesGround && len > 0.04f) // splayed legs count too
                         parts[i] = PartType.Leg;
                     else if (len > 0.08f && sb.xMax >= b.xMax - w * 0.15f)
                     {
@@ -337,6 +384,9 @@ namespace ArtWar
                         parts[i] = level ? PartType.Gun : PartType.Weapon;
                     }
                 }
+                else if (straightness > 0.25f && len > 0.12f && touchesGround && Mathf.Min(start.y, end.y) <= b.yMin + h * 0.1f &&
+                         Mathf.Abs(delta.y) > Mathf.Max(h * 0.15f, size * 0.12f) && Mathf.Abs(delta.y) > Mathf.Abs(delta.x) * 0.8f)
+                    parts[i] = PartType.Leg; // a bent leg (knee) running down to the ground
                 else if (straightness > 0.25f && len > 0.12f)
                 {
                     if (sb.height > sb.width * 1.5f)
@@ -441,7 +491,7 @@ namespace ArtWar
             if (la > size * 0.3f || lb > size * 0.3f || la < 0.03f || lb < 0.03f) return false;
             Vector2 a0 = a.points[0], a1 = a.points[a.points.Count - 1];
             Vector2 b0 = b.points[0], b1 = b.points[b.points.Count - 1];
-            if (Vector2.Distance(a0, a1) / la < 0.85f || Vector2.Distance(b0, b1) / lb < 0.85f) return false;
+            if (Vector2.Distance(a0, a1) / la < 0.75f || Vector2.Distance(b0, b1) / lb < 0.75f) return false;
 
             Vector2 da = a1 - a0, db = b1 - b0;
             float angle = Vector2.Angle(da, db);
@@ -452,7 +502,7 @@ namespace ArtWar
             Vector2 d = b0 - a0;
             float ta = (d.x * db.y - d.y * db.x) / denom;
             float tb = (d.x * da.y - d.y * da.x) / denom;
-            return ta > 0.25f && ta < 0.75f && tb > 0.25f && tb < 0.75f;
+            return ta > 0.15f && ta < 0.85f && tb > 0.15f && tb < 0.85f;
         }
 
         public static UnitStats Analyze(Doodle doodle)
@@ -464,10 +514,28 @@ namespace ArtWar
             stats.inkCost = total * InkPerUnit;
 
             var partTypes = ClassifyParts(doodle);
+
+            // the main body: the biggest closed outline (a weapon drawn inside it is decoration, not a weapon held out)
+            Rect body = default;
+            float bodyArea = 0f;
+            foreach (var s in doodle.strokes)
+            {
+                if (!IsClosed(s)) continue;
+                var sb = StrokeBounds(s.points);
+                if (sb.width * sb.height > bodyArea) { bodyArea = sb.width * sb.height; body = sb; }
+            }
+            var bodyGrown = Rect.MinMaxRect(body.xMin - body.width * 0.05f, body.yMin - body.height * 0.05f,
+                body.xMax + body.width * 0.05f, body.yMax + body.height * 0.05f);
+
             for (int i = 0; i < partTypes.Length; i++)
             {
                 var p = partTypes[i];
                 if (DoodleAnalyzer.IsClosed(doodle.strokes[i])) stats.closedShapes++;
+                if (p == PartType.Weapon || p == PartType.Gun || p == PartType.Bow)
+                {
+                    var wb = StrokeBounds(doodle.strokes[i].points);
+                    if (bodyArea <= 0f || !(bodyGrown.Contains(wb.min) && bodyGrown.Contains(wb.max))) stats.outerWeapons++;
+                }
                 if (p == PartType.Weapon || p == PartType.Gun)
                 {
                     var pts = doodle.strokes[i].points;
@@ -494,18 +562,26 @@ namespace ArtWar
 
             bool robotBody = stats.boxes >= 2 && stats.legs + stats.wings > 0 && stats.boxes + stats.legs + stats.wings >= 4;
             bool catapult = stats.steepWeapons > 0 && stats.steepWeapons == stats.weapons; // a raised arm, no level barrel
+            // shapes with no legs, wheels, wings or rotor that are recognised by how their outlines sit
+            bool bare = stats.legs == 0 && stats.wheels == 0 && stats.rotors == 0;
+            bool ghost = bare && stats.boxes < 2 && HasWavyHem(doodle);
+            int stack = bare && stats.wings == 0 ? Stacked(doodle) : 0;
+
             if (stats.rotors > 0) stats.kind = UnitKind.Helicopter;
             else if (robotBody) stats.kind = UnitKind.Robot; // a boxy body wins over wings (a flying robot is still a robot)
+            else if (ghost) stats.kind = UnitKind.Ghost; // one sheet with a wavy hem (its waving arms are not wings)
+            else if (stack == 2) stats.kind = UnitKind.Balloon;
+            else if (stack == 1) stats.kind = UnitKind.Snowman;
             else if (stats.wings > 0)
                 stats.kind = stats.legs > 0 ? (IsFullDragon(stats) ? UnitKind.Dragon : UnitKind.Bat)
                     : stats.propellers > 0 ? UnitKind.Plane : UnitKind.Jet;
             else if (stats.wheels >= 2) stats.kind = catapult ? UnitKind.Catapult : UnitKind.Tank;
             else if (stats.crosses > 0) stats.kind = UnitKind.Healer;
             else if (stats.guards > 0 && stats.legs > 0 && stats.legs < 4) stats.kind = UnitKind.Shieldman;
-            else if (stats.legs == 0 && HasWavyHem(doodle)) stats.kind = UnitKind.Ghost; // a sheet with a wavy hem, no legs
             else if (stats.legs == 0)
-                stats.kind = stats.bows > 0 || stats.weapons > 0 ? UnitKind.Turret : UnitKind.Wall;
+                stats.kind = stats.outerWeapons > 0 ? UnitKind.Turret : UnitKind.Wall;
             else if (stats.bows > 0) stats.kind = UnitKind.Archer;
+            else if (stats.legs >= 6) stats.kind = UnitKind.Spider; // six or more legs: a creepy-crawly, not a horse
             else if (stats.legs >= 4) stats.kind = UnitKind.Cavalry;
             else if (stats.bombs > 0) stats.kind = UnitKind.Grenadier;
             else if (stats.guns > 0) stats.kind = UnitKind.Rifleman;
@@ -660,6 +736,30 @@ namespace ArtWar
                     stats.splash = 1.4f;
                     stats.attackInterval = 3.5f;
                     break;
+                case UnitKind.Spider:
+                    // a fast little biter whose venom slows its victim
+                    stats.maxHp *= 0.75f;
+                    stats.damage *= 0.9f;
+                    stats.speed = 2.6f;
+                    stats.attackInterval = 0.65f;
+                    break;
+                case UnitKind.Snowman:
+                    // tough, slow, throws slowing snowballs from a distance
+                    stats.maxHp *= 1.8f;
+                    stats.damage = 6f + stats.size * 6f;
+                    stats.speed = 0.75f;
+                    stats.range = 4.5f;
+                    stats.attackInterval = 1.6f;
+                    break;
+                case UnitKind.Balloon:
+                    // drifts over the field dropping bombs; sturdy, but a big target for arrows
+                    stats.flying = true;
+                    stats.maxHp *= 1.6f;
+                    stats.damage *= 1.3f;
+                    stats.speed = 1.0f;
+                    stats.splash = 1.1f;
+                    stats.attackInterval = 2f;
+                    break;
                 case UnitKind.Bat:
                     // cheap, quick little biter that flies
                     stats.flying = true;
@@ -702,6 +802,59 @@ namespace ArtWar
         }
 
         /// <summary>How much of its bounding box a closed shape fills: ~1 for boxes, ~0.79 for circles, ~0.5 for triangles.</summary>
+        /// <summary>
+        /// A drawn box: fills its bounding box well, or (for a shaky hand) fairly well with about four sharp corners.
+        /// Circles and ellipses have no corners, so they never pass for boxes.
+        /// </summary>
+        static bool IsBoxy(List<Vector2> pts, Rect sb)
+        {
+            float rect = Rectangularity(pts, sb);
+            int corners = CountCorners(pts);
+            if (corners > 6) return false; // a zig-zag edge (a ghost's hem, a crown) is not a box
+            if (rect > 0.8f) return corners >= 2 || rect > 0.9f;
+            return rect > 0.7f && corners >= 3 && corners <= 5;
+        }
+
+        /// <summary>Sharp turns round a closed outline (the outline resampled evenly, each turn measured over a short span).</summary>
+        public static int CountCorners(List<Vector2> pts)
+        {
+            const int n = 64, span = 3;
+            float length = 0f;
+            for (int i = 1; i < pts.Count; i++) length += Vector2.Distance(pts[i - 1], pts[i]);
+            if (length < 1e-4f) return 0;
+            var even = new List<Vector2>();
+            float step = length / n, travelled = 0f, next = 0f;
+            for (int i = 1; i < pts.Count && even.Count < n; i++)
+            {
+                Vector2 a = pts[i - 1], b = pts[i];
+                float seg = Vector2.Distance(a, b);
+                while (next <= travelled + seg && even.Count < n)
+                {
+                    even.Add(Vector2.Lerp(a, b, seg < 1e-6f ? 0f : (next - travelled) / seg));
+                    next += step;
+                }
+                travelled += seg;
+            }
+            int m = even.Count;
+            if (m < 8) return 0;
+            var turn = new float[m];
+            for (int i = 0; i < m; i++)
+            {
+                Vector2 before = even[i] - even[(i - span + m) % m], after = even[(i + span) % m] - even[i];
+                turn[i] = Vector2.Angle(before, after);
+            }
+            int corners = 0;
+            for (int i = 0; i < m; i++)
+            {
+                if (turn[i] < 55f) continue;
+                bool peak = true;
+                for (int k = 1; k <= span; k++)
+                    if (turn[(i + k) % m] > turn[i] || turn[(i - k + m) % m] >= turn[i]) { peak = false; break; }
+                if (peak) corners++;
+            }
+            return corners;
+        }
+
         static float Rectangularity(List<Vector2> pts, Rect sb)
         {
             float area = 0f;

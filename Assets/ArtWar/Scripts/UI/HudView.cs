@@ -71,7 +71,7 @@ namespace ArtWar
             v.pad = UiKit.Rect(frame, "Drawing Pad", new Vector2(12f, 12f), new Vector2(width - 24f, 576f));
             v.pad.gameObject.AddComponent<RawImage>();
             UiKit.Label(frame, "Page Hint", new Vector2(18f, 556f), new Vector2(width - 36f, 30f), 18, TextAnchor.MiddleLeft,
-                new Color(0.45f, 0.45f, 0.55f), "Mỗi lần chỉ vẽ MỘT lính, rồi bấm \"Hóa thật!\"", "Draw ONE unit at a time, then press \"Summon!\"");
+                new Color(0.45f, 0.45f, 0.55f), "Mỗi lần chỉ vẽ MỘT lính, rồi bấm \"Triệu hồi!\"", "Draw ONE unit at a time, then press \"Summon!\"");
             v.toastText = UiKit.Label(root, "Toast", new Vector2(left, 710f), new Vector2(width, 50f), 30, TextAnchor.MiddleCenter,
                 new Color(1f, 0.35f, 0.25f), bold: true);
 
@@ -95,7 +95,7 @@ namespace ArtWar
             v.assistLabel = UiKit.ButtonLabel(v.assistButton);
             x += 102f;
             v.summonButton = UiKit.Button(root, "Summon", new Vector2(x, 22f), new Vector2(left + width - x, 86f), UiKit.Primary, 30,
-                "Hóa thật!", "Summon!");
+                "Triệu hồi!", "Summon!");
 
             // banner over the battlefield
             var banner = UiKit.Panel(root, "Banner", Vector2.zero, new Vector2(BannerWidth, 150f), UiKit.HudPanel);

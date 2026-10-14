@@ -30,6 +30,9 @@ namespace ArtWar
             ("Robot bay", RobotFlyer),
             ("Hồn ma", Ghost),
             ("Dơi", Bat),
+            ("Nhện", Spider),
+            ("Người tuyết", Snowman),
+            ("Khinh khí cầu", Balloon),
         };
 
         /// <summary>
@@ -188,6 +191,44 @@ namespace ArtWar
             return d;
         }
 
+        /// <summary>Spider: a round body and a little head, with eight straight legs splayed out and down to the ground.</summary>
+        public static Doodle Spider(InkColor color)
+        {
+            var d = new Doodle { color = color };
+            d.strokes.Add(Ellipse(new Vector2(0.5f, 0.42f), 0.14f, 0.1f));            // body
+            d.strokes.Add(Circle(new Vector2(0.67f, 0.45f), 0.065f));                  // head
+            float[] hips = { 0.41f, 0.45f, 0.49f, 0.53f }, feet = { 0.12f, 0.22f, 0.32f, 0.42f };
+            for (int i = 0; i < 4; i++)
+            {
+                d.strokes.Add(Line(new Vector2(hips[i], 0.36f), new Vector2(feet[i], 0.1f)));          // left legs
+                d.strokes.Add(Line(new Vector2(1f - hips[i] + 0.06f, 0.36f), new Vector2(1f - feet[i] + 0.06f, 0.1f))); // right legs
+            }
+            return d;
+        }
+
+        /// <summary>Snowman: a big snowball, a smaller one on top and a head, twig arms out to the sides.</summary>
+        public static Doodle Snowman(InkColor color)
+        {
+            var d = new Doodle { color = color };
+            d.strokes.Add(Circle(new Vector2(0.5f, 0.27f), 0.17f));                   // bottom ball
+            d.strokes.Add(Circle(new Vector2(0.5f, 0.55f), 0.12f));                   // middle ball
+            d.strokes.Add(Circle(new Vector2(0.5f, 0.75f), 0.085f));                  // head
+            d.strokes.Add(Polyline(false, new Vector2(0.39f, 0.58f), new Vector2(0.27f, 0.66f), new Vector2(0.22f, 0.72f))); // twig arms
+            d.strokes.Add(Polyline(false, new Vector2(0.61f, 0.58f), new Vector2(0.73f, 0.66f), new Vector2(0.78f, 0.72f)));
+            return d;
+        }
+
+        /// <summary>Hot-air balloon: a big round envelope with a band, two ropes down to a little basket.</summary>
+        public static Doodle Balloon(InkColor color)
+        {
+            var d = new Doodle { color = color };
+            d.strokes.Add(Ellipse(new Vector2(0.5f, 0.64f), 0.2f, 0.23f));            // envelope
+            d.strokes.Add(Line(new Vector2(0.37f, 0.47f), new Vector2(0.45f, 0.27f))); // ropes
+            d.strokes.Add(Line(new Vector2(0.63f, 0.47f), new Vector2(0.55f, 0.27f)));
+            d.strokes.Add(Box(0.43f, 0.13f, 0.57f, 0.27f));                           // basket
+            return d;
+        }
+
         /// <summary>
         /// Ghost: a round-topped sheet with a wavy hem and two arms reaching forward. Tagged as a ghost so it is
         /// not mistaken for a wall when it arrives without a chosen body (enemy samples).
@@ -237,6 +278,7 @@ namespace ArtWar
                 case UnitKind.Ghost: return Ghost(InkColor.Black);
                 case UnitKind.Grenadier: return Grenadier(InkColor.Black);
                 case UnitKind.Bat: return Bat(InkColor.Black);
+                case UnitKind.Spider: return Spider(InkColor.Black);
                 default: return StickSoldier(InkColor.Black);
             }
         }

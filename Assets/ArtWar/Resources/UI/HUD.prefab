@@ -1866,7 +1866,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: Summon!
+  m_text: "Tri\u1EC7u h\u1ED3i!"
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: e32651326ecec4e4fad932ae2bc491cd, type: 2}
   m_sharedMaterial: {fileID: 2100000, guid: ab8be95a71a2f8046b9a4cb73f6b2fbe, type: 2}
@@ -1950,7 +1950,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a7cdca257851c844d984a8ea797fe5f0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::ArtWar.LocalizedText
-  vietnamese: "H\xF3a th\u1EADt!"
+  vietnamese: "Tri\u1EC7u h\u1ED3i!"
   english: Summon!
 --- !u!1 &3671926636355684415
 GameObject:
@@ -4352,7 +4352,8 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: Draw ONE unit at a time, then press "Summon!"
+  m_text: "M\u1ED7i l\u1EA7n ch\u1EC9 v\u1EBD M\u1ED8T l\xEDnh, r\u1ED3i b\u1EA5m
+    \"Tri\u1EC7u h\u1ED3i!\""
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: e32651326ecec4e4fad932ae2bc491cd, type: 2}
   m_sharedMaterial: {fileID: -8588703302345319802, guid: e32651326ecec4e4fad932ae2bc491cd, type: 2}
@@ -4437,7 +4438,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::ArtWar.LocalizedText
   vietnamese: "M\u1ED7i l\u1EA7n ch\u1EC9 v\u1EBD M\u1ED8T l\xEDnh, r\u1ED3i b\u1EA5m
-    \"H\xF3a th\u1EADt!\""
+    \"Tri\u1EC7u h\u1ED3i!\""
   english: Draw ONE unit at a time, then press "Summon!"
 --- !u!1 &8071318864205081179
 GameObject:

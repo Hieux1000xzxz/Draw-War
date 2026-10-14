@@ -75,7 +75,7 @@ namespace ArtWar
             v.logo = UiKit.Label(sheet, "Logo", new Vector2(0f, 705f), new Vector2(1260f, 175f), 150, TextAnchor.MiddleCenter,
                 UiKit.Primary, "DRAW WAR", "DRAW WAR", true);
             UiKit.Outlined(v.logo);
-            Heading(sheet, "Tagline", 640f, 1260f, 34, "Vẽ quân  ·  Hóa thật  ·  Phá thành!", "Draw  ·  Fight  ·  Win!");
+            Heading(sheet, "Tagline", 640f, 1260f, 34, "Vẽ quân  ·  Triệu hồi  ·  Phá thành!", "Draw  ·  Fight  ·  Win!");
 
             for (int i = 0; i < v.parade.Length; i++)
             {

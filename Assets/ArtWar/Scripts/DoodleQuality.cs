@@ -17,7 +17,8 @@ namespace ArtWar
         /// <summary>Kinds that come in numbers: the better the drawing, the more of them.</summary>
         public static bool Multiplies(UnitKind k) =>
             k == UnitKind.Infantry || k == UnitKind.Rifleman || k == UnitKind.Archer ||
-            k == UnitKind.Shieldman || k == UnitKind.Healer || k == UnitKind.Grenadier || k == UnitKind.Bat;
+            k == UnitKind.Shieldman || k == UnitKind.Healer || k == UnitKind.Grenadier || k == UnitKind.Bat ||
+            k == UnitKind.Spider;
 
         /// <summary>0..1: 1 = traced the neat drawing exactly.</summary>
         public static float Score(Doodle d, UnitStats s)

@@ -9,6 +9,7 @@ namespace ArtWar
         const float FlyHeight = 2.6f;
         const float GhostHeight = 0.55f; // ghosts drift low, just above the swords
         const float BatHeight = 1.5f;    // bats flit about head height
+        const float BalloonHeight = 3.4f; // balloons float high and slow
 
         public Team Team { get; private set; }
         public UnitStats Stats { get; private set; }
@@ -57,6 +58,18 @@ namespace ArtWar
         public Vector3 Center => transform.position + Vector3.up * (Height * 0.5f);
 
         public bool CanHit(DoodleUnit other) => !other.IsFlying || Stats.HitsAir;
+
+        float slowUntil;
+
+        /// <summary>Walking speed, halved while slowed by venom or snow.</summary>
+        float Speed => Stats.speed * (Time.time < slowUntil ? 0.5f : 1f);
+
+        /// <summary>Slows this unit for a while (spider venom, snowballs).</summary>
+        public void Slow(float seconds)
+        {
+            if (IsBase) return;
+            slowUntil = Mathf.Max(slowUntil, Time.time + seconds);
+        }
 
         /// <summary>Little creatures (soldiers, riders, bats) squeak, yell and scream like cartoon cockroaches; machines don't.</summary>
         public bool HasVoice => !IsBase && (Kind == UnitKind.Infantry || Kind == UnitKind.Cavalry || Kind == UnitKind.Archer ||
@@ -172,7 +185,8 @@ namespace ArtWar
             hpBarWidth = Mathf.Clamp(Radius * 1.6f, 0.7f, 2.5f);
             var root = new GameObject("HP Bar").transform;
             root.SetParent(transform, false);
-            root.localPosition = new Vector3(0f, height + 0.25f, 0f);
+            // a castle's bar floats well clear of the banner on its keep
+            root.localPosition = new Vector3(0f, height + (IsBase ? 0.9f : 0.25f), 0f);
 
             var bg = MakeQuad(root, new Color(0.2f, 0.17f, 0.15f));
             bg.localScale = new Vector3(hpBarWidth + 0.06f, 0.16f, 1f);
@@ -248,7 +262,7 @@ namespace ArtWar
             if (p.x * heading > mgr.fieldHalfX + 1.5f) heading = -heading;
 
             var target = lookTarget = mgr.FindTarget(this);
-            Vector3 move = new Vector3(heading * Stats.speed, 0f, 0f);
+            Vector3 move = new Vector3(heading * Speed, 0f, 0f);
             if (target != null)
             {
                 Vector3 to = target.transform.position - p;
@@ -364,7 +378,7 @@ namespace ArtWar
         void MoveTowards(BattleManager mgr, Vector3 to)
         {
             if (Mathf.Abs(to.x) > 0.05f && !IsFlying) heading = TeamFacing; // ground units keep facing the enemy
-            Vector3 move = to.normalized * Stats.speed + mgr.Separation(this);
+            Vector3 move = to.normalized * Speed + mgr.Separation(this);
             transform.position = mgr.ClampToField(transform.position + move * Time.deltaTime);
         }
 
@@ -380,12 +394,14 @@ namespace ArtWar
         {
             switch (Kind)
             {
-                case UnitKind.Plane: return 0.3f + target.Radius * 0.5f; // fly over it and drop bombs
+                case UnitKind.Plane:
+                case UnitKind.Balloon: return 0.3f + target.Radius * 0.5f; // fly over it and drop bombs
                 case UnitKind.Infantry:
                 case UnitKind.Cavalry:
                 case UnitKind.Wall:
                 case UnitKind.Ghost:
-                case UnitKind.Bat: return Radius + target.Radius + 0.1f;
+                case UnitKind.Bat:
+                case UnitKind.Spider: return Radius + target.Radius + 0.1f;
                 case UnitKind.Shieldman: return Radius + target.Radius + 0.1f + Stats.range; // the spear reaches over the shield
                 case UnitKind.Robot:
                     // fists and swords fight up close; cannon and jet robots shoot from range
@@ -433,6 +449,7 @@ namespace ArtWar
                 }
 
                 case UnitKind.Plane:
+                case UnitKind.Balloon:
                 {
                     Vector3 impact = target.transform.position;
                     Vector3 belly = transform.position + Vector3.up * (Height * 0.3f);
@@ -480,6 +497,23 @@ namespace ArtWar
                     }
                     break;
                 }
+
+                case UnitKind.Spider:
+                    // a venomous bite: hurts a little and slows the victim down
+                    target.TakeDamage(dmg * Counter(target));
+                    target.Slow(1.5f);
+                    break;
+
+                case UnitKind.Snowman:
+                    // a big snowball on a high lob; whoever it hits is slowed by the cold
+                    Projectile.Launch(DoodleTemplates.BallShot(InkColor.Black), 0.35f, muzzle, target.Center, 8f, 1.6f, false,
+                        () =>
+                        {
+                            if (target == null || !target.IsAlive) return;
+                            target.TakeDamage(dmg * Counter(target));
+                            target.Slow(2.5f);
+                        }, new Color(0.95f, 0.98f, 1f));
+                    break;
 
                 case UnitKind.Grenadier:
                 {
@@ -662,6 +696,9 @@ namespace ArtWar
                 case UnitKind.Grenadier: Sfx.Play(Sound.Fwip, 0.5f, 0.7f); if (Random.value < 0.3f) Sfx.Play(Sound.Giggle, 0.7f, VoicePitch); break;
                 case UnitKind.Catapult: Sfx.Play(Sound.Swish, 0.8f, 0.55f); Sfx.Play(Sound.Clank, 0.4f, 0.6f); break;
                 case UnitKind.Bat: Sfx.Play(Sound.Squeak, 0.35f, 1.8f); break;
+                case UnitKind.Spider: Sfx.Play(Sound.Squeak, 0.3f, 2.2f); break;
+                case UnitKind.Snowman: Sfx.Play(Sound.Fwip, 0.5f, 0.6f); break;
+                case UnitKind.Balloon: Sfx.Play(Sound.BombWhistle, 0.45f, 0.9f); break;
             }
         }
 
@@ -690,6 +727,10 @@ namespace ArtWar
                 case UnitKind.Grenadier: // bombs drop over shields onto packed soldiers
                     return k == UnitKind.Shieldman || k == UnitKind.Infantry || k == UnitKind.Rifleman ? 1.4f : 1f;
                 case UnitKind.Catapult: return k == UnitKind.Wall || k == UnitKind.Turret || k == UnitKind.Tank ? 1.5f : 1f;
+                case UnitKind.Spider: return k == UnitKind.Archer || k == UnitKind.Healer || k == UnitKind.Grenadier ? 1.4f : 1f;
+                case UnitKind.Snowman: return k == UnitKind.Cavalry || k == UnitKind.Spider ? 1.4f : 1f; // snow stops fast runners
+                case UnitKind.Balloon:
+                    return k == UnitKind.Tank || k == UnitKind.Wall || k == UnitKind.Turret || k == UnitKind.Catapult ? 1.5f : 1f;
                 case UnitKind.Bat: // harasses the back line
                     return k == UnitKind.Healer || k == UnitKind.Archer || k == UnitKind.Catapult || k == UnitKind.Grenadier ? 1.5f : 1f;
                 case UnitKind.Ghost:
@@ -709,7 +750,8 @@ namespace ArtWar
         void UpdateFlight()
         {
             // Take off after peeling off the page, then hover.
-            float cruise = Kind == UnitKind.Ghost ? GhostHeight : Kind == UnitKind.Bat ? BatHeight : FlyHeight;
+            float cruise = Kind == UnitKind.Ghost ? GhostHeight : Kind == UnitKind.Bat ? BatHeight
+                : Kind == UnitKind.Balloon ? BalloonHeight : FlyHeight;
             float targetAltitude = Time.time - spawnTime > 0.45f ? cruise : 0f;
             float climb = 3f;
             if (diveTime >= 0f)
@@ -773,7 +815,7 @@ namespace ArtWar
                 {
                     // melee lunges forward, shooters recoil
                     bool melee = Kind == UnitKind.Infantry || Kind == UnitKind.Cavalry || Kind == UnitKind.Dragon || Kind == UnitKind.Robot ||
-                                 Kind == UnitKind.Shieldman || Kind == UnitKind.Ghost || Kind == UnitKind.Bat;
+                                 Kind == UnitKind.Shieldman || Kind == UnitKind.Ghost || Kind == UnitKind.Bat || Kind == UnitKind.Spider;
                     lunge = Mathf.Sin(k * Mathf.PI) * 0.35f * Facing * (melee ? 1f : -0.4f);
                 }
             }

@@ -253,7 +253,8 @@ namespace ArtWar
             AttachToWings(result);
             AttachToFeet(result);
             AttachToHands(result);
-            if (withEyes) AddEyes(result, facing, line, sketch);
+            // robots have a mouth drawn on their box head already
+            if (withEyes) AddEyes(result, facing, line, sketch, mouth: classify && !sketch && kind != UnitKind.Robot);
             return result;
         }
 
@@ -394,7 +395,7 @@ namespace ArtWar
 
         // ---------------------------------------------------------------- eyes
 
-        static void AddEyes(BuiltDoodle d, float facing, Color ink, bool fierce = false)
+        static void AddEyes(BuiltDoodle d, float facing, Color ink, bool fierce = false, bool mouth = false)
         {
             float maxDim = Mathf.Max(d.size.x, d.size.y);
             BuiltPart head = null, body = null;
@@ -464,6 +465,75 @@ namespace ArtWar
                 d.eyes.Add(eye);
                 d.pupils.Add(pupil);
             }
+
+            if (!mouth) return;
+            // a little mouth under the eyes, a touch forward: a smiling "v", a grumpy "^" or a big open laughing V
+            Vector2 m = (a + c) * 0.5f + new Vector2(facing * er * 0.4f, -er * 2.1f);
+            float half = er * 0.8f, width = Mathf.Max(er * 0.3f, 0.012f);
+            int style = Random.Range(0, 3);
+            if (style == 2)
+            {
+                // laughing: a wide open V filled dark, with a pink tongue at the bottom
+                float w = er * 1.05f, depth = er * 1.15f, top = m.y + er * 0.35f;
+                AddPolygonObject(anchor, "Mouth", new[]
+                {
+                    new Vector2(m.x - w, top), new Vector2(m.x + w, top), new Vector2(m.x, top - depth),
+                }, -0.016f, ColorMaterial(ink));
+                AddPolygonObject(anchor, "Tongue", new[]
+                {
+                    new Vector2(m.x - w * 0.42f, top - depth * 0.58f), new Vector2(m.x + w * 0.42f, top - depth * 0.58f),
+                    new Vector2(m.x, top - depth * 0.92f),
+                }, -0.018f, ColorMaterial(new Color(1f, 0.45f, 0.5f)));
+                return;
+            }
+            float dip = er * 0.55f * (style == 0 ? 1f : -1f);
+            AddLineObject(anchor, "Mouth", new[]
+            {
+                new Vector2(m.x - half, m.y + dip * 0.5f), new Vector2(m.x, m.y - dip * 0.5f), new Vector2(m.x + half, m.y + dip * 0.5f),
+            }, width, -0.016f, ColorMaterial(ink));
+        }
+
+        /// <summary>A small filled shape (fan triangles from its first corner, drawn from both sides).</summary>
+        static void AddPolygonObject(Transform parent, string name, Vector2[] corners, float z, Material mat)
+        {
+            var v = new List<Vector3>();
+            var t = new List<int>();
+            foreach (var p in corners) v.Add(p);
+            for (int i = 1; i + 1 < corners.Length; i++) t.AddRange(new[] { 0, i, i + 1, 0, i + 1, i });
+            var mesh = new Mesh { name = name };
+            mesh.SetVertices(v);
+            mesh.SetTriangles(t, 0);
+            mesh.RecalculateBounds();
+            var go = new GameObject(name);
+            go.transform.SetParent(parent, false);
+            go.transform.localPosition = new Vector3(0f, 0f, z);
+            go.AddComponent<MeshFilter>().sharedMesh = mesh;
+            go.AddComponent<MeshRenderer>().sharedMaterial = mat;
+        }
+
+        /// <summary>A short pen line through the given points (each joint gets a round dot so corners don't gap).</summary>
+        static void AddLineObject(Transform parent, string name, Vector2[] points, float width, float z, Material mat)
+        {
+            var v = new List<Vector3>();
+            var t = new List<int>();
+            for (int i = 1; i < points.Length; i++)
+            {
+                Vector2 p0 = points[i - 1], p1 = points[i];
+                Vector2 n = Vector2.Perpendicular((p1 - p0).normalized) * (width * 0.5f);
+                int k = v.Count;
+                v.Add(p0 - n); v.Add(p0 + n); v.Add(p1 - n); v.Add(p1 + n);
+                t.AddRange(new[] { k, k + 1, k + 2, k + 2, k + 1, k + 3, k, k + 2, k + 1, k + 2, k + 3, k + 1 });
+            }
+            foreach (var p in points) AddDisc(v, t, p, width * 0.5f, 0f, 8);
+            var mesh = new Mesh { name = name };
+            mesh.SetVertices(v);
+            mesh.SetTriangles(t, 0);
+            mesh.RecalculateBounds();
+            var go = new GameObject(name);
+            go.transform.SetParent(parent, false);
+            go.transform.localPosition = new Vector3(0f, 0f, z);
+            go.AddComponent<MeshFilter>().sharedMesh = mesh;
+            go.AddComponent<MeshRenderer>().sharedMaterial = mat;
         }
 
         static Transform AddDiscObject(Transform parent, string name, float r, float z, Material mat)

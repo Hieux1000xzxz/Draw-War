@@ -15,15 +15,16 @@ namespace ArtWar
 
         static Color32[] px;
         static int w, h;
-        static float worldW, worldD;
+        static float worldW, worldD, worldC;
         static System.Random rng;
 
         /// <param name="width">world size of the paper along X</param>
         /// <param name="depth">world size along Z</param>
-        public static Texture2D Paint(float width, float depth, float fieldHalfX, float fieldHalfZ)
+        public static Texture2D Paint(float width, float depth, float centreZ, float fieldHalfX, float fieldHalfZ)
         {
             worldW = width;
             worldD = depth;
+            worldC = centreZ;
             w = Mathf.Min(2048, Mathf.CeilToInt(width * PxPerUnit));
             h = Mathf.Min(1024, Mathf.CeilToInt(depth * PxPerUnit));
             px = new Color32[w * h];
@@ -36,7 +37,7 @@ namespace ArtWar
             Margins(fieldHalfX + 1f);
             Lane(laneX, laneZ);
             Doodles(laneX, laneZ);
-            Stains();
+            Stains(laneZ);
             PencilAndEraser(laneZ);
 
             var tex = new Texture2D(w, h, TextureFormat.RGBA32, true)
@@ -54,7 +55,7 @@ namespace ArtWar
         // ---------------------------------------------------------------- coordinates
 
         /// <summary>World X/Z on the page to a pixel (the plane's U runs along -X, V along -Z).</summary>
-        static Vector2 P(float x, float z) => new Vector2((0.5f - x / worldW) * w, (0.5f - z / worldD) * h);
+        static Vector2 P(float x, float z) => new Vector2((0.5f - x / worldW) * w, (0.5f - (z - worldC) / worldD) * h);
         static float Px(float units) => units * PxPerUnit;
         static float R(float a, float b) => a + (float)rng.NextDouble() * (b - a);
 
@@ -84,7 +85,7 @@ namespace ArtWar
         static void RuledLines()
         {
             var rule = new Color(0.62f, 0.75f, 0.9f, 0.7f);
-            for (float z = -worldD * 0.5f + 0.5f; z < worldD * 0.5f; z += 0.5f)
+            for (float z = worldC - worldD * 0.5f + 0.5f; z < worldC + worldD * 0.5f; z += 0.5f)
             {
                 int y = Mathf.RoundToInt(P(0f, z).y);
                 for (int x = 0; x < w; x++)
@@ -155,14 +156,15 @@ namespace ArtWar
         static void Doodles(float laneX, float laneZ)
         {
             var placed = new List<Vector2>();
-            float zNear0 = -worldD * 0.5f + 0.9f, zNear1 = -laneZ - 0.6f;
-            float zFar0 = laneZ + 0.6f, zFar1 = worldD * 0.5f - 0.9f;
+            float zNear0 = worldC - worldD * 0.5f + 0.9f, zNear1 = -laneZ - 0.6f;
+            float zFar0 = laneZ + 0.6f, zFar1 = Mathf.Max(zFar0 + 0.1f, worldC + worldD * 0.5f - 0.9f);
+            float pencilZ = -laneZ - 1.25f;
             int tries = 0;
-            while (placed.Count < 30 && tries++ < 600)
+            while (placed.Count < 42 && tries++ < 900)
             {
                 bool near = placed.Count % 3 != 0; // the near margin is the one the camera sees best
                 var c = new Vector2(R(-laneX + 0.5f, laneX - 0.5f), near ? R(zNear0, zNear1) : R(zFar0, zFar1));
-                if (near && c.x < 1.5f && c.x > -7.5f && c.y < -3.6f) continue; // leave room for the pencil
+                if (near && c.x < 4.2f && c.x > -7.5f && Mathf.Abs(c.y - pencilZ) < 0.8f) continue; // leave room for the pencil and eraser
                 bool clear = true;
                 foreach (var p in placed) if (Vector2.Distance(p, c) < 1.7f) { clear = false; break; }
                 if (!clear) continue;
@@ -290,11 +292,11 @@ namespace ArtWar
 
         // ---------------------------------------------------------------- stains and props
 
-        static void Stains()
+        static void Stains(float laneZ)
         {
             // ink blots with splatter
             var ink = new Color(0.12f, 0.14f, 0.3f, 0.75f);
-            foreach (var c in new[] { new Vector2(9.4f, -4.3f), new Vector2(-10.2f, 4.2f), new Vector2(4.6f, 3.9f) })
+            foreach (var c in new[] { new Vector2(9.4f, -laneZ - 2.6f), new Vector2(-10.2f, laneZ + 0.9f), new Vector2(4.6f, laneZ + 0.9f) })
             {
                 float r = R(0.18f, 0.28f);
                 for (int i = 0; i < 7; i++)
@@ -311,8 +313,8 @@ namespace ArtWar
 
             // a coffee ring from someone's mug
             var coffee = new Color(0.55f, 0.35f, 0.15f, 0.16f);
-            Circle(new Vector2(-9.3f, -4.1f), 0.55f, coffee, 7f, 0.01f);
-            Circle(new Vector2(-9.25f, -4.12f), 0.5f, new Color(coffee.r, coffee.g, coffee.b, 0.1f), 3f, 0.01f);
+            Circle(new Vector2(-9.3f, -laneZ - 2.7f), 0.55f, coffee, 7f, 0.01f);
+            Circle(new Vector2(-9.25f, -laneZ - 2.72f), 0.5f, new Color(coffee.r, coffee.g, coffee.b, 0.1f), 3f, 0.01f);
         }
 
         /// <summary>A yellow pencil and a pink eraser left lying in the front margin.</summary>

@@ -105,7 +105,7 @@ namespace ArtWar
             {
                 var make = SampleByLabel(parade[i]);
                 if (make == null || menu.parade[i] == null) continue;
-                menu.parade[i].texture = DoodleThumbnail.Render(make(InkColor.Black), 192,
+                menu.parade[i].texture = Thumbnail(parade[i], make, 192,
                     i % 2 == 0 ? new Color(0.45f, 0.8f, 0.95f) : new Color(0.98f, 0.6f, 0.75f));
             }
 
@@ -144,9 +144,25 @@ namespace ArtWar
 
         void StartFromTitle()
         {
-            phaseTimer = drawPhaseSeconds;
-            ShowPage(Page.None);
-            Sfx.Play(Sound.WarCry, 0.7f);
+            // the title rolls away under the clouds and the battlefield appears behind them
+            CloudWipe.Play(() =>
+            {
+                if (this == null) return;
+                phaseTimer = drawPhaseSeconds;
+                ShowPage(Page.None);
+                Sfx.Play(Sound.WarCry, 0.7f);
+            });
+        }
+
+        /// <summary>Unit pictures for the menus, painted once and kept across scene reloads.</summary>
+        static readonly Dictionary<string, Texture2D> thumbnails = new Dictionary<string, Texture2D>();
+
+        static Texture2D Thumbnail(string label, System.Func<InkColor, Doodle> make, int size, Color fill)
+        {
+            string key = $"{label}|{size}|{fill}";
+            if (!thumbnails.TryGetValue(key, out var tex) || tex == null)
+                thumbnails[key] = tex = DoodleThumbnail.Render(make(InkColor.Black), size, fill);
+            return tex;
         }
 
         static System.Func<InkColor, Doodle> SampleByLabel(string label)
@@ -167,18 +183,19 @@ namespace ArtWar
             OnClick(menu.homeButton, GoHome);
         }
 
-        void Restart()
-        {
-            skipTitle = true;
-            Time.timeScale = 1f;
-            SceneManager.LoadScene(SceneManager.GetActiveScene().name);
-        }
+        void Restart() => ReloadBehindClouds(true);
 
-        void GoHome()
+        void GoHome() => ReloadBehindClouds(false);
+
+        /// <summary>Clouds roll over the screen, the scene reloads behind them (into a new battle or the title).</summary>
+        static void ReloadBehindClouds(bool straightIntoBattle)
         {
-            skipTitle = false;
-            Time.timeScale = 1f;
-            SceneManager.LoadScene(SceneManager.GetActiveScene().name);
+            CloudWipe.Play(() =>
+            {
+                skipTitle = straightIntoBattle;
+                Time.timeScale = 1f;
+                SceneManager.LoadScene(SceneManager.GetActiveScene().name);
+            });
         }
 
         // ---------------------------------------------------------------- settings
@@ -329,14 +346,14 @@ namespace ArtWar
                 rt.anchoredPosition = new Vector2(gap + col * (cardW + gap), height - (row + 1) * (cardH + gap));
                 card.name = "Card " + samples[i].label;
                 tips.TryGetValue(samples[i].label, out string tip);
-                FillCard(card, samples[i].make(InkColor.Black), tip);
+                FillCard(card, samples[i].label, samples[i].make(InkColor.Black), tip);
             }
         }
 
-        static void FillCard(CodexCardView card, Doodle doodle, string tip)
+        static void FillCard(CodexCardView card, string name, Doodle doodle, string tip)
         {
             var s = DoodleAnalyzer.Analyze(doodle);
-            card.picture.texture = DoodleThumbnail.Render(doodle, 200, new Color(0.45f, 0.8f, 0.95f));
+            card.picture.texture = Thumbnail(name, _ => doodle, 200, new Color(0.45f, 0.8f, 0.95f));
             card.nameText.text = DoodleAnalyzer.DisplayName(s);
             card.howText.text = "✎ " + tip;
             card.hintText.text = s.kind == UnitKind.Robot ? RobotHint(s.robotMode) : DoodleAnalyzer.KindHint(s.kind);
@@ -413,12 +430,31 @@ namespace ArtWar
         void ShowPage(Page next)
         {
             if (next == Page.Pause && Phase == Phase.Over) return;
+            if (next != page && next != Page.None && pages.TryGetValue(next, out var shown) && shown != null)
+                StartCoroutine(SlideUp((RectTransform)shown.transform));
             page = next;
             foreach (var kv in pages) if (kv.Value != null) kv.Value.SetActive(kv.Key == next);
             menu.gameObject.SetActive(next != Page.None);
             // menus freeze the battle; the results screen lets the last pieces settle
             Time.timeScale = next == Page.None || next == Page.Results ? 1f : 0f;
             pad.Locked = next != Page.None || Phase == Phase.Over;
+        }
+
+        /// <summary>A menu sheet pops up from below the screen with a little overshoot (menus run while time is frozen).</summary>
+        static System.Collections.IEnumerator SlideUp(RectTransform sheet)
+        {
+            const float duration = 0.32f, start = -1150f;
+            Vector2 home = new Vector2(sheet.anchoredPosition.x, 0f);
+            for (float t = 0f; t < duration; t += Time.unscaledDeltaTime)
+            {
+                if (sheet == null) yield break;
+                float k = t / duration;
+                // ease out with a small bounce past the top
+                float e = 1f + 2.4f * Mathf.Pow(k - 1f, 3f) + 1.4f * Mathf.Pow(k - 1f, 2f);
+                sheet.anchoredPosition = home + new Vector2(0f, Mathf.LerpUnclamped(start, 0f, e));
+                yield return null;
+            }
+            if (sheet != null) sheet.anchoredPosition = home;
         }
 
         void UpdateMenus()
@@ -469,7 +505,7 @@ namespace ArtWar
              Loc.T("Đầu trận có thời gian <b>chuẩn bị</b> để vẽ quân. Bấm <b>Bắt đầu chiến!</b> (hoặc hết giờ) là hai bên lao vào nhau.\n\n", "The game opens with <b>prep time</b> to draw your army. Press <b>Start battle!</b> (or let the clock run out) and both armies charge.\n\n") +
              Loc.T("Trong lúc giao chiến bạn <b>vẫn vẽ tiếp</b> để gửi quân tiếp viện.", "During the battle you <b>keep drawing</b> to send reinforcements.")),
             (Loc.T("Vẽ quân", "Drawing units"),
-             Loc.T("Vẽ <b>MỘT</b> chiến binh lên trang giấy rồi bấm <b>Hóa thật!</b>\n\n", "Draw <b>ONE</b> warrior on the page, then press <b>Summon!</b>\n\n") +
+             Loc.T("Vẽ <b>MỘT</b> chiến binh lên trang giấy rồi bấm <b>Triệu hồi!</b>\n\n", "Draw <b>ONE</b> warrior on the page, then press <b>Summon!</b>\n\n") +
              Loc.T("Game nhìn hình để biết đó là lính gì: chân que, vũ khí chéo, súng ngang, khiên tròn, cánh, bánh xe, hình hộp...\n", "The game reads the shape to tell what it is: stick legs, slanted weapons, level guns, round shields, wings, wheels, boxes...\n") +
              Loc.T("Mở <b>Sổ tay quân</b> ở màn hình chính để học cách vẽ từng loại.\n\n", "Open the <b>Unit Handbook</b> on the title screen to learn how to draw each one.\n\n") +
              Loc.T("Màu mực: <b>Đen</b> cân bằng · <b>Đỏ</b> đánh mạnh, ít máu · <b>Xanh</b> trâu, chậm hơn.", "Ink colors: <b>Black</b> balanced · <b>Red</b> hits harder, less HP · <b>Blue</b> tougher, slower.")),
@@ -514,6 +550,9 @@ namespace ArtWar
             { "Robot bay", Loc.T("Robot + đôi cánh", "Robot + a pair of wings") },
             { "Hồn ma", Loc.T("Một tấm khép kín, ĐÁY LƯỢN SÓNG, không chân", "A closed sheet with a WAVY HEM, no legs") },
             { "Dơi", Loc.T("Thân nhỏ + đầu + 2 cánh + 2 chân, vẽ đơn giản", "Small body + head + 2 wings + 2 legs, kept simple") },
+            { "Nhện", Loc.T("Thân tròn + đầu nhỏ + từ 6 chân trở lên chĩa xuống đất", "Round body + small head + 6 or more legs reaching down to the ground") },
+            { "Người tuyết", Loc.T("2–3 vòng tròn chồng lên nhau, to ở dưới, nhỏ ở trên, không chân", "2–3 circles stacked up, big at the bottom, small on top, no legs") },
+            { "Khinh khí cầu", Loc.T("Vòng tròn TO ở trên + 2 sợi dây + giỏ nhỏ ở dưới", "A BIG circle on top + 2 ropes + a small basket below") },
         };
 
     }

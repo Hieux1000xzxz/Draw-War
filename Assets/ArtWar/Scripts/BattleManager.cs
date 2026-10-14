@@ -24,10 +24,10 @@ namespace ArtWar
         public float armyInk = 1000f;
 
         [Header("Battlefield")]
-        public float fieldHalfX = 11f;
+        public float fieldHalfX = 13f;
         [Tooltip("Extra distance each army stands back from the middle while waiting, so the two sides start far apart.")]
         public float startGap = 2.5f;
-        public float fieldHalfZ = 2.2f;
+        public float fieldHalfZ = 3.4f;
         public float baseHp = 1500f;
         [Tooltip("Ink regained per second during the battle, for both sides.")]
         public int maxUnitsPerSide = 30;
@@ -78,6 +78,8 @@ namespace ArtWar
         {
             Instance = this;
             Sfx.Ensure();
+            Sfx.SetBattleMood(false);
+            Sfx.PlayMusic(); // the last game may have ended with the music stopped
             ink = armyInk;
             LoadSettings();
             phaseTimer = drawPhaseSeconds;
@@ -237,14 +239,16 @@ namespace ArtWar
                 case UnitKind.Shieldman: group = 7; depth = 1.9f; break; // the phalanx holds the front
                 case UnitKind.Infantry:
                 case UnitKind.Cavalry:
-                case UnitKind.Robot: group = 1; depth = 2.5f; break;
+                case UnitKind.Robot:
+                case UnitKind.Spider: group = 1; depth = 2.5f; break;
                 case UnitKind.Tank: group = 2; depth = 3.8f; break;
                 case UnitKind.Plane:
                 case UnitKind.Jet:
                 case UnitKind.Helicopter:
                 case UnitKind.Dragon:
                 case UnitKind.Ghost:
-                case UnitKind.Bat: group = 3; depth = 3.0f; break;
+                case UnitKind.Bat:
+                case UnitKind.Balloon: group = 3; depth = 3.0f; break;
                 case UnitKind.Healer: group = 4; depth = 6.1f; break;
                 case UnitKind.Rifleman: group = 6; depth = 5.0f; break;
                 default: group = 5; depth = 6.9f; break; // archers, turrets
@@ -253,7 +257,7 @@ namespace ArtWar
             formationCounts[(team, group)] = i + 1;
 
             float[] lanes = { 0f, -1.5f, 1.5f, -0.75f, 0.75f, -2.2f, 2.2f };
-            float z = Mathf.Clamp(lanes[i % lanes.Length], -fieldHalfZ, fieldHalfZ);
+            float z = Mathf.Clamp(lanes[i % lanes.Length] * fieldHalfZ / 2.2f, -fieldHalfZ, fieldHalfZ); // lanes spread over the lane's depth
             depth = Mathf.Min(startGap + depth + (i / lanes.Length) * 1.1f, fieldHalfX - 0.5f);
             float side = team == Team.Player ? -1f : 1f;
             return new Vector3(side * depth, 0f, z);
@@ -599,7 +603,7 @@ namespace ArtWar
                 kindText.text = Loc.T("Vẽ một chiến binh!", "Draw a warrior!");
                 kindText.color = Color.white;
                 hintText.text = Loc.T("Game nhìn hình để biết đó là lính gì. Cách vẽ từng loại: xem Sổ tay quân ở màn hình chính", "The game reads your drawing to tell which unit it is. How to draw each one: see the Unit Handbook on the title screen");
-                statsText.text = Loc.T("Vẽ xong bấm <b>Hóa thật!</b>\n", "When done, press <b>Summon!</b>\n") +
+                statsText.text = Loc.T("Vẽ xong bấm <b>Triệu hồi!</b>\n", "When done, press <b>Summon!</b>\n") +
                                  Loc.T("<size=75%>Viền màu: chân (xanh lá) · vũ khí (đỏ) · súng (cam) · khiên (xanh dương) · cánh (lơ) · bánh (vàng)</size>", "<size=75%>Outlines: legs (green) · weapon (red) · gun (orange) · shield (blue) · wings (cyan) · wheels (yellow)</size>");
                 return;
             }
@@ -651,14 +655,27 @@ namespace ArtWar
             if (camData != null) camData.renderPostProcessing = false;
             FitCamera();
 
+            // The paper battlefield and the landscape never change, so they are built once and kept across scene
+            // reloads (Play Again, Main Menu, language switch) instead of being painted again every time.
+            if (world != null) return;
+            world = new GameObject("World");
+            DontDestroyOnLoad(world);
+
             var ground = GameObject.CreatePrimitive(PrimitiveType.Plane);
             ground.name = "Paper Ground";
-            ground.transform.localScale = new Vector3((fieldHalfX + 3f) * 0.2f, 1f, 1.1f); // paper reaches past both castles
-            float paperWidth = (fieldHalfX + 3f) * 2f, paperDepth = 11f;
+            ground.transform.SetParent(world.transform, false);
+            // the page reaches past both castles, and from just behind the lane forward to the river bank
+            float paperWidth = (fieldHalfX + 3f) * 2f;
+            float paperFront = Waterscape.RiverZ + 2.3f, paperBack = fieldHalfZ + 2.6f;
+            float paperDepth = paperBack - paperFront, paperCentre = (paperBack + paperFront) * 0.5f;
+            ground.transform.position = new Vector3(0f, 0f, paperCentre);
+            ground.transform.localScale = new Vector3(paperWidth * 0.1f, 1f, paperDepth * 0.1f);
             ground.GetComponent<Renderer>().sharedMaterial =
-                DoodleBuilder.TextureMaterial(PaperGround.Paint(paperWidth, paperDepth, fieldHalfX, fieldHalfZ));
-            Scenery.Build(transform, fieldHalfX, fieldHalfZ);
+                DoodleBuilder.TextureMaterial(PaperGround.Paint(paperWidth, paperDepth, paperCentre, fieldHalfX, fieldHalfZ));
+            Scenery.Build(world.transform, fieldHalfX, fieldHalfZ);
         }
+
+        static GameObject world;
 
         /// <summary>Frames the whole battlefield in the screen area to the right of the drawing column.</summary>
         void FitCamera()
