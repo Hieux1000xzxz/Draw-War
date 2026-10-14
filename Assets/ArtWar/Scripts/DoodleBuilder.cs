@@ -80,11 +80,22 @@ namespace ArtWar
             return m;
         }
 
+        static Material unlitBase;
+
         static Material NewUnlit()
         {
-            var shader = Shader.Find("Universal Render Pipeline/Unlit");
-            if (shader == null) shader = Shader.Find("Sprites/Default");
-            var m = new Material(shader);
+            // Copies of the two material assets in Resources/Materials: a build only keeps the shader (and its
+            // see-through variant, which MakeTransparent switches on) because those assets use them; Shader.Find
+            // alone works in the editor only.
+            if (unlitBase == null) unlitBase = Resources.Load<Material>("Materials/Doodle Unlit");
+            Material m;
+            if (unlitBase != null) m = new Material(unlitBase);
+            else
+            {
+                var shader = Shader.Find("Universal Render Pipeline/Unlit");
+                if (shader == null) shader = Shader.Find("Sprites/Default");
+                m = new Material(shader);
+            }
             if (m.HasProperty("_Cull")) m.SetFloat("_Cull", 0f); // double sided
             return m;
         }
