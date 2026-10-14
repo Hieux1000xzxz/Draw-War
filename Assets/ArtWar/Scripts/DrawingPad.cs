@@ -98,13 +98,9 @@ namespace ArtWar
 
         void Update()
         {
-            var pointer = Pointer.current;
-            if (pointer != null && !Locked)
+            if (!Locked && ReadPen(out Vector2 screen, out bool began, out bool pressed))
             {
-                Vector2 screen = pointer.position.ReadValue();
-                bool pressed = pointer.press.isPressed;
-
-                if (pointer.press.wasPressedThisFrame && TryGetCanvasPoint(screen, out var c))
+                if (began && TryGetCanvasPoint(screen, out var c))
                     BeginStroke(c);
                 else if (current != null && pressed)
                 {
@@ -124,6 +120,53 @@ namespace ArtWar
                 tex.Apply(false);
                 dirty = false;
             }
+        }
+
+        int touchId = -1; // the finger drawing on this page, so two players can draw on two pages at once
+
+        /// <summary>
+        /// The pen for this page: on a touch screen, the finger that first touched down on this page (each page
+        /// follows its own finger); otherwise the mouse or pen.
+        /// </summary>
+        bool ReadPen(out Vector2 screen, out bool began, out bool pressed)
+        {
+            screen = Vector2.zero;
+            began = pressed = false;
+            var touchscreen = Touchscreen.current;
+            if (touchscreen != null)
+            {
+                bool anyTouch = false;
+                foreach (var touch in touchscreen.touches)
+                {
+                    bool down = touch.press.isPressed;
+                    anyTouch |= down;
+                    int id = touch.touchId.ReadValue();
+                    if (touchId >= 0)
+                    {
+                        if (id != touchId) continue;
+                        screen = touch.position.ReadValue();
+                        pressed = down;
+                        if (!down) touchId = -1;
+                        return true;
+                    }
+                    if (touch.press.wasPressedThisFrame && TryGetCanvasPoint(touch.position.ReadValue(), out _))
+                    {
+                        touchId = id;
+                        screen = touch.position.ReadValue();
+                        began = pressed = true;
+                        return true;
+                    }
+                }
+                if (touchId >= 0) { touchId = -1; return true; } // the finger vanished: end the stroke
+                if (anyTouch) return true;                        // fingers busy elsewhere
+            }
+
+            var pointer = (Pointer)Pen.current ?? Mouse.current;
+            if (pointer == null) return false;
+            screen = pointer.position.ReadValue();
+            pressed = pointer.press.isPressed;
+            began = pointer.press.wasPressedThisFrame;
+            return true;
         }
 
         bool TryGetCanvasPoint(Vector2 screen, out Vector2 c)

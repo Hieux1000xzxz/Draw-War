@@ -13,7 +13,7 @@ namespace ArtWar
     {
         [Header("Pages")]
         public GameObject backdrop;
-        public GameObject titlePage, pausePage, settingsPage, helpPage, codexPage, resultsPage;
+        public GameObject titlePage, pausePage, settingsPage, helpPage, codexPage, resultsPage, onlinePage;
 
         [Header("Title")]
         public TMP_Text logo;
@@ -39,18 +39,23 @@ namespace ArtWar
         public RectTransform codexContent;
         public Button codexCloseButton;
 
+        [Header("Online")]
+        public Button quickButton, hostButton, joinButton, onlineCloseButton;
+        public TMP_InputField codeInput;
+        public TMP_Text onlineStatus;
+
         [Header("Results")]
         public TMP_Text resultTitle, resultRating, resultBody;
         public Button resultAgainButton, resultHomeButton;
+
+        public static readonly Color PracticeGreen = new Color(0.33f, 0.66f, 0.45f);
+        public static readonly Color VersusRed = new Color(0.86f, 0.32f, 0.3f);
+        public static readonly Color OnlinePurple = new Color(0.55f, 0.4f, 0.8f);
 
         public static MenuView Build()
         {
             var go = UiKit.Canvas("Menus", 10);
             var v = go.AddComponent<MenuView>();
-
-        public static readonly Color PracticeGreen = new Color(0.33f, 0.66f, 0.45f);
-        public static readonly Color VersusRed = new Color(0.86f, 0.32f, 0.3f);
-        public static readonly Color OnlinePurple = new Color(0.55f, 0.4f, 0.8f);
 
             var layer = UiKit.Rect(go.transform, "Backdrop", Vector2.zero, Vector2.zero);
             UiKit.Stretch(layer);
@@ -65,6 +70,7 @@ namespace ArtWar
             BuildHelp(v, layer);
             BuildCodex(v, layer);
             BuildResults(v, layer);
+            BuildOnline(v, layer);
             return v;
         }
 
@@ -155,6 +161,55 @@ namespace ArtWar
                 v.languageOptions[i] = UiKit.Button(list.transform, names[i], new Vector2(6f, 6f + (1 - i) * 66f), new Vector2(378f, 64f),
                     UiKit.Paper, 26, names[i]);
             v.languageList.SetActive(false);
+        }
+
+        public static void BuildOnline(MenuView v, Transform layer)
+        {
+            var sheet = UiKit.Sheet(layer, "Online Page", new Vector2(900f, 800f));
+            v.onlinePage = sheet.gameObject;
+            Heading(sheet, "Title", 700f, 900f, 52, "CHƠI ONLINE", "PLAY ONLINE");
+            UiKit.Label(sheet, "Info", new Vector2(60f, 610f), new Vector2(780f, 60f), 24, TextAnchor.MiddleCenter, UiKit.InkText,
+                "Chủ phòng là Người chơi 1 (xanh), người vào sau là Người chơi 2 (đỏ).",
+                "The room's host is player 1 (blue), the one who joins is player 2 (red).");
+            v.quickButton = UiKit.Button(sheet, "Quick Match", new Vector2(210f, 490f), new Vector2(480f, 100f), OnlinePurple, 38,
+                "TÌM TRẬN NHANH", "QUICK MATCH");
+            v.hostButton = UiKit.Button(sheet, "Host", new Vector2(210f, 380f), new Vector2(480f, 90f), UiKit.Primary, 32,
+                "TẠO PHÒNG RIÊNG (có mã)", "PRIVATE ROOM (with a code)");
+
+            UiKit.Label(sheet, "Join Label", new Vector2(60f, 300f), new Vector2(780f, 50f), 26, TextAnchor.MiddleCenter, UiKit.InkText,
+                "hoặc nhập mã phòng của bạn bè:", "or type your friend's room code:");
+            v.codeInput = InputBox(sheet, "Room Code", new Vector2(160f, 200f), new Vector2(380f, 90f), "ABC123");
+            v.joinButton = UiKit.Button(sheet, "Join", new Vector2(560f, 200f), new Vector2(180f, 90f), UiKit.Secondary, 34, "VÀO", "JOIN");
+
+            v.onlineStatus = UiKit.Label(sheet, "Status", new Vector2(60f, 40f), new Vector2(780f, 150f), 28, TextAnchor.MiddleCenter, UiKit.InkText);
+            v.onlineCloseButton = UiKit.Button(sheet, "Close", new Vector2(810f, 710f), new Vector2(74f, 74f), UiKit.Muted, 30, "X");
+        }
+
+        /// <summary>A one-line text box drawn like the other paper buttons.</summary>
+        static TMP_InputField InputBox(Transform parent, string name, Vector2 pos, Vector2 size, string placeholder)
+        {
+            var box = UiKit.Panel(parent, name, pos, size, Color.white);
+            var area = UiKit.Rect(box.transform, "Text Area", Vector2.zero, Vector2.zero);
+            UiKit.Stretch(area, 18f);
+            area.gameObject.AddComponent<RectMask2D>();
+            var hint = UiKit.Label(area, "Placeholder", Vector2.zero, Vector2.zero, 34, TextAnchor.MiddleCenter, UiKit.Muted);
+            UiKit.Stretch(hint.rectTransform);
+            hint.text = placeholder;
+            hint.fontStyle = FontStyles.Italic;
+            var text = UiKit.Label(area, "Text", Vector2.zero, Vector2.zero, 34, TextAnchor.MiddleCenter, UiKit.InkText);
+            UiKit.Stretch(text.rectTransform);
+            text.textWrappingMode = TextWrappingModes.NoWrap;
+            var field = box.gameObject.AddComponent<TMP_InputField>();
+            field.textViewport = area;
+            field.textComponent = text;
+            field.placeholder = hint;
+            field.fontAsset = text.font;
+            field.pointSize = 34;
+            field.characterLimit = 16;
+            field.contentType = TMP_InputField.ContentType.Standard;
+            field.lineType = TMP_InputField.LineType.SingleLine;
+            box.raycastTarget = true;
+            return field;
         }
 
         static void BuildHelp(MenuView v, Transform layer)

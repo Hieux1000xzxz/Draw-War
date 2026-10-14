@@ -143,6 +143,86 @@ namespace ArtWar.EditorTools
             AssetDatabase.SaveAssets();
         }
 
+        /// <summary>
+        /// Brings existing prefabs up to date without laying them out again: saves the practice room if it's missing
+        /// and adds the "Practice" button to the title page of Menus.prefab (the other title buttons move over to make
+        /// room). Everything else edited in the prefabs is kept.
+        /// </summary>
+        [MenuItem("Draw War/UI/Add Missing UI (keep edits)")]
+        public static string AddMissing()
+        {
+            string log = "";
+            string practicePath = UiFolder + "/Practice.prefab";
+            if (!File.Exists(practicePath))
+            {
+                UiKit.ClearCache();
+                Save(PracticeView.Build().gameObject, practicePath);
+                log += "Practice.prefab saved. ";
+            }
+
+            string menusPath = UiFolder + "/Menus.prefab";
+            var root = PrefabUtility.LoadPrefabContents(menusPath);
+            var menu = root.GetComponent<MenuView>();
+            if (menu != null && menu.practiceButton == null && menu.titlePage != null)
+            {
+                var sheet = menu.titlePage.transform;
+                menu.practiceButton = UiKit.Button(sheet, "Practice", new Vector2(60f, 45f), new Vector2(270f, 92f),
+                    MenuView.PracticeGreen, 28, "Luyện vẽ", "Practice");
+                Place(menu.codexButton, 350f);
+                Place(menu.helpButton, 640f);
+                Place(menu.settingsButton, 930f);
+                PrefabUtility.SaveAsPrefabAsset(root, menusPath);
+                log += "Practice button added to Menus.prefab. ";
+            }
+            if (menu != null && menu.versusButton == null && menu.titlePage != null && menu.playButton != null)
+            {
+                // the PLAY button makes room for a "2 PLAYERS" button beside it
+                var play = (RectTransform)menu.playButton.transform;
+                play.anchoredPosition = new Vector2(250f, play.anchoredPosition.y);
+                play.sizeDelta = new Vector2(370f, play.sizeDelta.y);
+                menu.versusButton = UiKit.Button(menu.titlePage.transform, "Versus", new Vector2(640f, play.anchoredPosition.y),
+                    new Vector2(370f, play.sizeDelta.y), MenuView.VersusRed, 36, "2 NGƯỜI CHƠI", "2 PLAYERS");
+                menu.versusButton.GetComponentInChildren<TMPro.TMP_Text>().textWrappingMode = TMPro.TextWrappingModes.NoWrap;
+                PrefabUtility.SaveAsPrefabAsset(root, menusPath);
+                log += "2-player button added to Menus.prefab. ";
+            }
+            if (menu != null && menu.onlineButton == null && menu.titlePage != null && menu.playButton != null && menu.versusButton != null)
+            {
+                // PLAY · 2 PLAYERS · ONLINE in one row
+                var play = (RectTransform)menu.playButton.transform;
+                var vs = (RectTransform)menu.versusButton.transform;
+                float y = play.anchoredPosition.y, h = play.sizeDelta.y;
+                play.anchoredPosition = new Vector2(90f, y);
+                play.sizeDelta = new Vector2(340f, h);
+                vs.anchoredPosition = new Vector2(460f, y);
+                vs.sizeDelta = new Vector2(340f, h);
+                menu.onlineButton = UiKit.Button(menu.titlePage.transform, "Online", new Vector2(830f, y), new Vector2(340f, h),
+                    MenuView.OnlinePurple, 34, "CHƠI ONLINE", "ONLINE");
+                menu.onlineButton.GetComponentInChildren<TMPro.TMP_Text>().textWrappingMode = TMPro.TextWrappingModes.NoWrap;
+                log += "Online button added to Menus.prefab. ";
+            }
+            if (menu != null && menu.onlinePage == null && menu.backdrop != null)
+            {
+                MenuView.BuildOnline(menu, menu.backdrop.transform);
+                menu.onlinePage.SetActive(false);
+                log += "Online page added to Menus.prefab. ";
+            }
+            if (log.Contains("Online")) PrefabUtility.SaveAsPrefabAsset(root, menusPath);
+            PrefabUtility.UnloadPrefabContents(root);
+            AssetDatabase.SaveAssets();
+            return log == "" ? "nothing missing" : log;
+        }
+
+        static void Place(UnityEngine.UI.Button button, float x)
+        {
+            if (button == null) return;
+            var rt = (RectTransform)button.transform;
+            rt.anchoredPosition = new Vector2(x, rt.anchoredPosition.y);
+            rt.sizeDelta = new Vector2(270f, rt.sizeDelta.y);
+            var label = UiKit.ButtonLabel(button);
+            if (label != null) label.fontSizeMax = Mathf.Min(label.fontSizeMax, 28f);
+        }
+
         static void Save(GameObject go, string path)
         {
             PrefabUtility.SaveAsPrefabAsset(go, path);

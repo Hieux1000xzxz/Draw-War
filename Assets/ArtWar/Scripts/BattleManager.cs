@@ -86,14 +86,18 @@ namespace ArtWar
             BuildWorld();
             BuildUI();
             SpawnBases();
-            PlanEnemyArmy();
+            if (Versus) enemyInk = armyInk; // the second player draws with the same ink as the first
+            else PlanEnemyArmy();
             RefreshStats();
             BuildMenus();
+            if (Versus) BuildSecondPlayer();
+            SetupOnline();
         }
 
         void OnDestroy()
         {
             if (Instance == this) Instance = null;
+            TeardownOnline();
         }
 
         void Update()
@@ -102,6 +106,8 @@ namespace ArtWar
             FitCamera();
             if (Time.time > toastUntil) toastText.text = "";
             RefreshInkBar();
+            if (Versus) UpdateSecondPlayer();
+            if (online && !OnlineUpdate()) { RefreshHud(); UpdateMenus(); return; }
 
             switch (Phase)
             {
@@ -121,9 +127,9 @@ namespace ArtWar
                     // Both sides keep drawing during the battle: mostly with ink won by defeating enemies, plus a slow
                     // trickle so neither side is ever left unable to draw.
                     ink = Mathf.Min(armyInk, ink + warInkRegen * Time.deltaTime);
-                    enemyInk = Mathf.Min(armyInk, enemyInk + warInkRegen * EnemyRegenFactor * Time.deltaTime);
+                    enemyInk = Mathf.Min(armyInk, enemyInk + warInkRegen * (Versus ? 1f : EnemyRegenFactor) * Time.deltaTime);
                     enemyDrawTimer -= Time.deltaTime;
-                    if (enemyDrawTimer <= 0f) EnemyReinforce();
+                    if (enemyDrawTimer <= 0f && !Versus) EnemyReinforce();
                     phaseText.text = Loc.T("GIAO CHIẾN!  Phá lâu đài địch!", "BATTLE!  Destroy the enemy castle!");
                     break;
             }
@@ -171,6 +177,7 @@ namespace ArtWar
         void StartWar()
         {
             if (Phase != Phase.Draw) return;
+            if (online && NetSession.IsGuest) return; // the host's clock starts it
             while (enemyPlan.Count > 0) SpawnEnemyUnit(enemyPlan.Dequeue()); // the enemy finishes its army
             Phase = Phase.War;
             Sfx.Play(Sound.Fanfare, 0.7f);
@@ -189,7 +196,7 @@ namespace ArtWar
             phaseText.text = Loc.T("KẾT THÚC", "GAME OVER");
             ShowResults(winner);
             Sfx.StopMusic();
-            Sfx.Play(winner == Team.Enemy ? Sound.Defeat : Sound.Victory, 0.8f);
+            Sfx.Play(winner == Team.Enemy && !versus ? Sound.Defeat : Sound.Victory, 0.8f);
         }
 
         // ---------------------------------------------------------------- units
@@ -201,6 +208,7 @@ namespace ArtWar
             var unit = go.AddComponent<DoodleUnit>();
             unit.Init(doodle, team, stats, isBase, scale);
             units.Add(unit);
+            if (online) RegisterNet(unit, doodle, isBase, scale);
             return unit;
         }
 
@@ -490,6 +498,7 @@ namespace ArtWar
         public void OnUnitDied(DoodleUnit unit)
         {
             units.Remove(unit);
+            if (online && NetSession.IsHost) { int id = unit.NetId; NetSession.Send(NetSession.Msg.Die, w => w.WriteValueSafe(id)); }
             if (unit.IsBase)
             {
                 EndGame(unit.Team == Team.Enemy ? Team.Player : Team.Enemy);
@@ -559,10 +568,12 @@ namespace ArtWar
             return true;
         }
 
-        void RefreshUpgradeButton()
+        void RefreshUpgradeButton() => RefreshUpgradeFor(playerBase, ink, upgradeLabel, upgradeImage);
+
+        static void RefreshUpgradeFor(DoodleUnit castle, float ink, TMP_Text upgradeLabel, Image upgradeImage)
         {
-            if (upgradeLabel == null || playerBase == null) return;
-            int next = playerBase.CastleLevel + 1;
+            if (upgradeLabel == null || castle == null) return;
+            int next = castle.CastleLevel + 1;
             if (next > DoodleUnit.CastleMaxLevel)
             {
                 upgradeLabel.text = Loc.T($"THÀNH CẤP {DoodleUnit.CastleMaxLevel} (tối đa)", $"CASTLE LEVEL {DoodleUnit.CastleMaxLevel} (max)");
@@ -594,7 +605,10 @@ namespace ArtWar
             RefreshUpgradeButton();
         }
 
-        void RefreshStats()
+        void RefreshStats() => RefreshStatsFor(pad, kindText, hintText, statsText);
+
+        /// <summary>Fills one player's recognition box from what is on their page.</summary>
+        static void RefreshStatsFor(DrawingPad pad, TMP_Text kindText, TMP_Text hintText, TMP_Text statsText)
         {
             var d = pad.CurrentDoodle;
             var s = DoodleAnalyzer.Analyze(d);
@@ -678,20 +692,26 @@ namespace ArtWar
 
         static GameObject world;
 
-        /// <summary>Frames the whole battlefield in the screen area to the right of the drawing column.</summary>
+        /// <summary>Frames the whole battlefield in the screen area between the drawing columns.</summary>
         void FitCamera()
         {
             if (cam == null) cam = Camera.main;
             if (cam == null) return;
             float aspect = (float)Screen.width / Mathf.Max(1, Screen.height);
-            float uiFraction = Mathf.Clamp(UiColumnWidth / (1080f * aspect), 0f, 0.6f);
+            float column = UiColumnWidth * ColumnScale / (1080f * aspect);
+            column = Mathf.Clamp(column, 0f, 0.45f);
+            // online each screen shows only its own player's column: the host's on the left, the guest's on the right
+            bool guestView = online && NetSession.IsGuest;
+            float leftFraction = guestView ? 0f : column;
+            float rightFraction = Versus && (!online || guestView) ? column : 0f; // the second player's column on the right
             float tanHalf = Mathf.Tan(cam.fieldOfView * 0.5f * Mathf.Deg2Rad);
             float fieldWidth = (fieldHalfX + 2.6f) * 2f;
-            float distance = Mathf.Clamp(fieldWidth / (2f * (1f - uiFraction) * 0.95f * tanHalf * aspect), 10f, 40f) * viewZoom;
+            float visible = Mathf.Max(0.2f, 1f - leftFraction - rightFraction);
+            float distance = Mathf.Clamp(fieldWidth / (2f * visible * 0.95f * tanHalf * aspect), 10f, 48f) * viewZoom;
             float halfWidth = distance * tanHalf * aspect;
 
             var rot = Quaternion.Euler(CameraPitch, 0f, 0f);
-            Vector3 focus = new Vector3(-uiFraction * halfWidth + viewPan.x, 1.2f, viewPan.y);
+            Vector3 focus = new Vector3(-(leftFraction - rightFraction) * halfWidth + viewPan.x, 1.2f, viewPan.y);
             cam.transform.SetPositionAndRotation(focus - rot * Vector3.forward * distance, rot);
         }
 

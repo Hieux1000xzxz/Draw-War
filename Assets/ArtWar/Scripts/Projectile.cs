@@ -14,6 +14,23 @@ namespace ArtWar
         public static void Launch(Doodle look, float scale, Vector3 from, Vector3 to, float speed, float arcHeight,
             bool alignToVelocity, Action onHit, Color? crayon = null)
         {
+            // online: the guest sees the same shot fly (just for show; the host decides what it hits)
+            if (NetSession.IsHost)
+            {
+                NetSession.Send(NetSession.Msg.Shot, w =>
+                {
+                    NetSession.WriteDoodle(w, look);
+                    w.WriteValueSafe(scale);
+                    w.WriteValueSafe(from);
+                    w.WriteValueSafe(to);
+                    w.WriteValueSafe(speed);
+                    w.WriteValueSafe(arcHeight);
+                    w.WriteValueSafe(alignToVelocity);
+                    w.WriteValueSafe(crayon.HasValue);
+                    w.WriteValueSafe(crayon ?? Color.white);
+                });
+            }
+
             var go = new GameObject("Projectile");
             go.transform.position = from;
             var built = crayon.HasValue

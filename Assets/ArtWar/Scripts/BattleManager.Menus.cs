@@ -80,6 +80,8 @@ namespace ArtWar
             pages[Page.Help] = menu.helpPage;
             pages[Page.Codex] = menu.codexPage;
             pages[Page.Results] = menu.resultsPage;
+            if (menu.onlinePage == null) MenuView.BuildOnline(menu, menu.backdrop.transform); // older saved Menus.prefab
+            pages[Page.Online] = menu.onlinePage;
 
             WireTitle();
             WirePause();
@@ -88,9 +90,9 @@ namespace ArtWar
             FillCodex();
             OnClick(menu.resultAgainButton, Restart);
             OnClick(menu.resultHomeButton, GoHome);
+            BuildPractice();
 
             ShowPage(skipTitle ? Page.None : Page.Title);
-            BuildPractice();
             if (reopenSettings && page == Page.Title) OpenSub(Page.Settings);
             reopenSettings = false;
             skipTitle = false;
@@ -118,14 +120,16 @@ namespace ArtWar
             RefreshDifficultyButtons();
 
             OnClick(menu.playButton, StartFromTitle);
+            OnClick(menu.versusButton, StartVersus);
+            WireOnline();
             OnClick(menu.codexButton, () => OpenSub(Page.Codex));
             OnClick(menu.helpButton, () => OpenSub(Page.Help));
             OnClick(menu.settingsButton, () => OpenSub(Page.Settings));
+            OnClick(menu.practiceButton, () => OpenSub(Page.Practice));
         }
 
         void SetDifficulty(Difficulty d)
         {
-            OnClick(menu.practiceButton, () => OpenSub(Page.Practice));
             difficulty = d;
             RefreshDifficultyButtons();
             SaveSettings();
@@ -185,9 +189,18 @@ namespace ArtWar
             OnClick(menu.homeButton, GoHome);
         }
 
-        void Restart() => ReloadBehindClouds(true);
+        void Restart()
+        {
+            if (online) { OnlineRematch(); return; }
+            ReloadBehindClouds(true);
+        }
 
-        void GoHome() => ReloadBehindClouds(false);
+        void GoHome()
+        {
+            versus = false;
+            LeaveOnline();
+            ReloadBehindClouds(false);
+        }
 
         /// <summary>Clouds roll over the screen, the scene reloads behind them (into a new battle or the title).</summary>
         static void ReloadBehindClouds(bool straightIntoBattle)
@@ -382,12 +395,15 @@ namespace ArtWar
         void ShowResults(Team? winner)
         {
             bool won = winner == Team.Player;
-            menu.resultTitle.text = won ? Loc.T("CHIẾN THẮNG!", "VICTORY!") : winner == null ? Loc.T("HÒA!", "DRAW!") : Loc.T("THẤT BẠI...", "DEFEAT...");
+            menu.resultTitle.text = versus
+                ? (winner == Team.Player ? Loc.T("NGƯỜI CHƠI 1 THẮNG!", "PLAYER 1 WINS!") : winner == Team.Enemy ? Loc.T("NGƯỜI CHƠI 2 THẮNG!", "PLAYER 2 WINS!") : Loc.T("HÒA!", "DRAW!"))
+                : won ? Loc.T("CHIẾN THẮNG!", "VICTORY!") : winner == null ? Loc.T("HÒA!", "DRAW!") : Loc.T("THẤT BẠI...", "DEFEAT...");
+            if (versus) won = winner != null; // a two-player game always has a happy winner
             menu.resultTitle.color = won ? new Color(0.95f, 0.6f, 0.1f) : new Color(0.8f, 0.25f, 0.2f);
 
             // rating: how much of our castle is still standing
             float left = playerBase != null ? Mathf.Clamp01(playerBase.Hp / playerBase.Stats.maxHp) : 0f;
-            int stars = !won ? 0 : left > 0.66f ? 3 : left > 0.33f ? 2 : 1;
+            int stars = versus || !won ? 0 : left > 0.66f ? 3 : left > 0.33f ? 2 : 1;
             menu.resultRating.text = new string('★', stars) + new string('☆', 3 - stars);
 
             float battle = warStartTime > 0f ? Time.time - warStartTime : 0f;
@@ -402,7 +418,25 @@ namespace ArtWar
                 Loc.T($"Lâu đài ta:  <b>cấp {level}</b>,  còn <b>{left * 100f:0}%</b> máu",
                       $"Our castle:  <b>level {level}</b>,  <b>{left * 100f:0}%</b> HP left"),
             };
+            if (versus)
+            {
+                // two players: the score is the two castles, not one side's record
+                float hp1 = playerBase != null && playerBase.IsAlive ? playerBase.Hp / playerBase.Stats.maxHp : 0f;
+                float hp2 = enemyBase != null && enemyBase.IsAlive ? enemyBase.Hp / enemyBase.Stats.maxHp : 0f;
+                lines = new[]
+                {
+                    $"{Loc.T("Thời gian giao chiến", "Battle time")}:  <b>{FormatTime(battle)}</b>",
+                    Loc.T($"Thành người chơi 1:  <b>{hp1 * 100f:0}%</b>   (cấp {(playerBase != null ? playerBase.CastleLevel : 1)})", $"Player 1 castle:  <b>{hp1 * 100f:0}%</b>   (level {(playerBase != null ? playerBase.CastleLevel : 1)})"),
+                    Loc.T($"Thành người chơi 2:  <b>{hp2 * 100f:0}%</b>   (cấp {(enemyBase != null ? enemyBase.CastleLevel : 1)})", $"Player 2 castle:  <b>{hp2 * 100f:0}%</b>   (level {(enemyBase != null ? enemyBase.CastleLevel : 1)})"),
+                    $"{Loc.T("Lính người chơi 1 đã hạ", "Defeated by player 1")}:  <b>{statKilled}</b>",
+                    $"{Loc.T("Lính người chơi 2 đã hạ", "Defeated by player 2")}:  <b>{statLost}</b>",
+                };
+            }
             menu.resultBody.text = string.Join("\n", lines);
+            // a long two-player title shrinks onto one line instead of running into the stars
+            UiKit.AutoSize(menu.resultTitle, 40, versus ? 80 : 96);
+            menu.resultTitle.textWrappingMode = TMPro.TextWrappingModes.NoWrap;
+            menu.resultRating.gameObject.SetActive(!versus);
             StartCoroutine(ShowResultsLater());
         }
 
@@ -438,8 +472,10 @@ namespace ArtWar
             foreach (var kv in pages) if (kv.Value != null) kv.Value.SetActive(kv.Key == next);
             menu.gameObject.SetActive(next != Page.None);
             // menus freeze the battle; the results screen lets the last pieces settle
-            Time.timeScale = next == Page.None || next == Page.Results ? 1f : 0f;
+            // menus freeze the battle (never online: the other player is still playing); the results let the last pieces settle
+            Time.timeScale = online || next == Page.None || next == Page.Results ? 1f : 0f;
             pad.Locked = next != Page.None || Phase == Phase.Over;
+            if (practicePad != null) practicePad.Locked = next != Page.Practice;
         }
 
         /// <summary>A menu sheet pops up from below the screen with a little overshoot (menus run while time is frozen).</summary>
@@ -471,13 +507,13 @@ namespace ArtWar
                 case Page.Help:
                 case Page.Codex:
                 case Page.Practice: Back(); break;
+                case Page.Online: CloseOnline(); break;
             }
         }
 
         // ---------------------------------------------------------------- HUD
 
         void RefreshHud()
-            if (practicePad != null) practicePad.Locked = next != Page.Practice;
         {
             void Set(DoodleUnit castle, RectTransform fill, TMP_Text label, TMP_Text title, string name, bool fromRight)
             {
@@ -491,11 +527,11 @@ namespace ArtWar
                 label.text = standing ? $"{Mathf.CeilToInt(hp)} / {max:0}" : Loc.T("ĐÃ SỤP!", "DESTROYED!");
                 if (castle != null) title.text = $"{name}  ·  {Loc.T("cấp", "lv")} {castle.CastleLevel}";
             }
-            Set(playerBase, hud.playerBarFill, hud.playerBarLabel, hud.playerBarTitle, Loc.T("THÀNH TA", "OUR CASTLE"), false);
-            Set(enemyBase, hud.enemyBarFill, hud.enemyBarLabel, hud.enemyBarTitle, Loc.T("THÀNH ĐỊCH", "ENEMY CASTLE"), true);
+            Set(playerBase, hud.playerBarFill, hud.playerBarLabel, hud.playerBarTitle, versus ? Loc.T("NGƯỜI CHƠI 1", "PLAYER 1") : Loc.T("THÀNH TA", "OUR CASTLE"), false);
+            Set(enemyBase, hud.enemyBarFill, hud.enemyBarLabel, hud.enemyBarTitle, versus ? Loc.T("NGƯỜI CHƠI 2", "PLAYER 2") : Loc.T("THÀNH ĐỊCH", "ENEMY CASTLE"), true);
 
             string armies = $"<b>{CountUnits(Team.Player)}  vs  {CountUnits(Team.Enemy)}</b>";
-            string extra = Phase == Phase.Draw ? Loc.T($"địch còn vẽ {enemyPlan.Count}", $"enemy drawing {enemyPlan.Count}")
+            string extra = Phase == Phase.Draw && versus ? "" : Phase == Phase.Draw ? Loc.T($"địch còn vẽ {enemyPlan.Count}", $"enemy drawing {enemyPlan.Count}")
                 : Phase == Phase.War ? FormatTime(Time.time - warStartTime) : "";
             countText.text = $"{armies}\n<size=75%>{extra}</size>";
         }
@@ -557,6 +593,9 @@ namespace ArtWar
             { "Nhện", Loc.T("Thân tròn + đầu nhỏ + từ 6 chân trở lên chĩa xuống đất", "Round body + small head + 6 or more legs reaching down to the ground") },
             { "Người tuyết", Loc.T("2–3 vòng tròn chồng lên nhau, to ở dưới, nhỏ ở trên, không chân", "2–3 circles stacked up, big at the bottom, small on top, no legs") },
             { "Khinh khí cầu", Loc.T("Vòng tròn TO ở trên + 2 sợi dây + giỏ nhỏ ở dưới", "A BIG circle on top + 2 ropes + a small basket below") },
+            { "Phù thủy", Loc.T("Người + MŨ NHỌN hình tam giác trên đầu (thêm gậy phép tùy thích)", "Human + a POINTED triangle hat on the head (a staff if you like)") },
+            { "Rắn", Loc.T("Một nét LƯỢN SÓNG dài sát đất + đầu tròn, không chân", "One long WAVY line along the ground + a round head, no legs") },
+            { "Kỵ cung", Loc.T("Ngựa 4 chân + người cưỡi cầm CUNG (nét cong) và mũi tên", "A 4-legged horse + a rider holding a BOW (a curve) and an arrow") },
         };
 
     }
@@ -597,9 +636,6 @@ namespace ArtWar
                             Blend(px, x + y * size, crayon);
                 }
             }
-            { "Phù thủy", Loc.T("Người + MŨ NHỌN hình tam giác trên đầu (thêm gậy phép tùy thích)", "Human + a POINTED triangle hat on the head (a staff if you like)") },
-            { "Rắn", Loc.T("Một nét LƯỢN SÓNG dài sát đất + đầu tròn, không chân", "One long WAVY line along the ground + a round head, no legs") },
-            { "Kỵ cung", Loc.T("Ngựa 4 chân + người cưỡi cầm CUNG (nét cong) và mũi tên", "A 4-legged horse + a rider holding a BOW (a curve) and an arrow") },
 
             // pen lines
             float r = Mathf.Max(1.6f, size / 70f);

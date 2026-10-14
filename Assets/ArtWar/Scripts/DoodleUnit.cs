@@ -21,6 +21,15 @@ namespace ArtWar
         public bool IsAlive => Hp > 0f;
         public UnitKind Kind => Stats.kind;
 
+        /// <summary>Same number on both devices in an online game.</summary>
+        public int NetId { get; set; }
+        /// <summary>On the guest's device: a puppet that only shows what the host sends.</summary>
+        public bool Remote { get; set; }
+        /// <summary>How many attacks it has made (sent online so the guest can play them).</summary>
+        public int AttackCount { get; private set; }
+        Vector3 remoteTarget;
+        bool remoteMoving;
+
         static readonly int BaseColorId = Shader.PropertyToID("_BaseColor");
         static readonly int ColorId = Shader.PropertyToID("_Color");
         static readonly Color HitTint = new Color(1f, 0.55f, 0.5f);
@@ -215,6 +224,11 @@ namespace ArtWar
         void Update()
         {
             if (!IsAlive) return;
+            if (Remote)
+            {
+                RemoteTick();
+                return;
+            }
 
             var mgr = BattleManager.Instance;
             bool moving = false;
@@ -402,6 +416,7 @@ namespace ArtWar
                 case UnitKind.Ghost:
                 case UnitKind.Bat:
                 case UnitKind.Spider: return Radius + target.Radius + 0.1f;
+                case UnitKind.Snake: return Radius + target.Radius + 0.1f + Stats.range; // strikes from a coil
                 case UnitKind.Shieldman: return Radius + target.Radius + 0.1f + Stats.range; // the spear reaches over the shield
                 case UnitKind.Robot:
                     // fists and swords fight up close; cannon and jet robots shoot from range
@@ -413,10 +428,10 @@ namespace ArtWar
         void Attack(DoodleUnit target)
         {
             var mgr = BattleManager.Instance;
+            AttackCount++;
             lungeTime = 0f;
             rig.Attack();
             float dmg = Stats.damage;
-                case UnitKind.Snake: return Radius + target.Radius + 0.1f + Stats.range; // strikes from a coil
             Vector3 muzzle = transform.position + new Vector3(Facing * Radius * 0.8f, Height * 0.55f, 0f);
             PlayAttackSound();
 
@@ -499,21 +514,6 @@ namespace ArtWar
                     break;
                 }
 
-                case UnitKind.Spider:
-                    // a venomous bite: hurts a little and slows the victim down
-                    target.TakeDamage(dmg * Counter(target));
-                    target.Slow(1.5f);
-                    break;
-
-                case UnitKind.Snowman:
-                    // a big snowball on a high lob; whoever it hits is slowed by the cold
-                    Projectile.Launch(DoodleTemplates.BallShot(InkColor.Black), 0.35f, muzzle, target.Center, 8f, 1.6f, false,
-                        () =>
-                        {
-                            if (target == null || !target.IsAlive) return;
-                            target.TakeDamage(dmg * Counter(target));
-                            target.Slow(2.5f);
-                        }, new Color(0.95f, 0.98f, 1f));
                 case UnitKind.HorseArcher:
                     Projectile.Launch(DoodleTemplates.ArrowShot(), 0.35f, muzzle, target.Center, 15f, 0.7f, true,
                         () => { if (target != null && target.IsAlive) target.TakeDamage(dmg * Counter(target)); });
@@ -534,6 +534,21 @@ namespace ArtWar
                 }
 
                 case UnitKind.Snake:
+                case UnitKind.Spider:
+                    // a venomous bite: hurts a little and slows the victim down
+                    target.TakeDamage(dmg * Counter(target));
+                    target.Slow(1.5f);
+                    break;
+
+                case UnitKind.Snowman:
+                    // a big snowball on a high lob; whoever it hits is slowed by the cold
+                    Projectile.Launch(DoodleTemplates.BallShot(InkColor.Black), 0.35f, muzzle, target.Center, 8f, 1.6f, false,
+                        () =>
+                        {
+                            if (target == null || !target.IsAlive) return;
+                            target.TakeDamage(dmg * Counter(target));
+                            target.Slow(2.5f);
+                        }, new Color(0.95f, 0.98f, 1f));
                     break;
 
                 case UnitKind.Grenadier:
@@ -718,6 +733,9 @@ namespace ArtWar
                 case UnitKind.Catapult: Sfx.Play(Sound.Swish, 0.8f, 0.55f); Sfx.Play(Sound.Clank, 0.4f, 0.6f); break;
                 case UnitKind.Bat: Sfx.Play(Sound.Squeak, 0.35f, 1.8f); break;
                 case UnitKind.Spider: Sfx.Play(Sound.Squeak, 0.3f, 2.2f); break;
+                case UnitKind.Snake: Sfx.Play(Sound.Swish, 0.4f, 1.8f); break;
+                case UnitKind.Wizard: Sfx.Play(Sound.Twinkle, 0.45f, 1.3f); break;
+                case UnitKind.HorseArcher: Sfx.Play(Sound.Fwip, 0.6f); break;
                 case UnitKind.Snowman: Sfx.Play(Sound.Fwip, 0.5f, 0.6f); break;
                 case UnitKind.Balloon: Sfx.Play(Sound.BombWhistle, 0.45f, 0.9f); break;
             }
@@ -733,9 +751,6 @@ namespace ArtWar
                 case UnitKind.Archer:
                 case UnitKind.Turret: return target.IsFlying ? 2f : 1f;
                 case UnitKind.Jet: return target.IsFlying ? 2f : 1f;
-                case UnitKind.Snake: Sfx.Play(Sound.Swish, 0.4f, 1.8f); break;
-                case UnitKind.Wizard: Sfx.Play(Sound.Twinkle, 0.45f, 1.3f); break;
-                case UnitKind.HorseArcher: Sfx.Play(Sound.Fwip, 0.6f); break;
                 case UnitKind.Plane:
                     return k == UnitKind.Tank ? 2f : k == UnitKind.Wall || k == UnitKind.Turret || k == UnitKind.Robot ? 1.5f : 1f;
                 case UnitKind.Helicopter: return k == UnitKind.Tank ? 1.5f : 1f;
@@ -752,6 +767,9 @@ namespace ArtWar
                     return k == UnitKind.Shieldman || k == UnitKind.Infantry || k == UnitKind.Rifleman ? 1.4f : 1f;
                 case UnitKind.Catapult: return k == UnitKind.Wall || k == UnitKind.Turret || k == UnitKind.Tank ? 1.5f : 1f;
                 case UnitKind.Spider: return k == UnitKind.Archer || k == UnitKind.Healer || k == UnitKind.Grenadier ? 1.4f : 1f;
+                case UnitKind.Snake: return k == UnitKind.Healer || k == UnitKind.Wizard || k == UnitKind.Rifleman ? 1.4f : 1f;
+                case UnitKind.Wizard: return target.IsFlying || k == UnitKind.Robot || k == UnitKind.Shieldman ? 1.4f : 1f; // magic goes through armour
+                case UnitKind.HorseArcher: return target.IsFlying ? 1.8f : 1f;
                 case UnitKind.Snowman: return k == UnitKind.Cavalry || k == UnitKind.Spider ? 1.4f : 1f; // snow stops fast runners
                 case UnitKind.Balloon:
                     return k == UnitKind.Tank || k == UnitKind.Wall || k == UnitKind.Turret || k == UnitKind.Catapult ? 1.5f : 1f;
@@ -767,9 +785,6 @@ namespace ArtWar
                         ? 1.3f : 1f;
                 default: return 1f;
             }
-                case UnitKind.Snake: return k == UnitKind.Healer || k == UnitKind.Wizard || k == UnitKind.Rifleman ? 1.4f : 1f;
-                case UnitKind.Wizard: return target.IsFlying || k == UnitKind.Robot || k == UnitKind.Shieldman ? 1.4f : 1f; // magic goes through armour
-                case UnitKind.HorseArcher: return target.IsFlying ? 1.8f : 1f;
         }
 
         // ---------------------------------------------------------------- visuals
@@ -960,6 +975,64 @@ namespace ArtWar
         }
 
         void OnDestroy() => DoodleBuilder.DestroyMeshes(gameObject);
+
+        // ---------------------------------------------------------------- online puppet
+
+        /// <summary>The host's latest word on this unit: where it is, its health, facing, castle level and attacks made.</summary>
+        public void ApplyRemoteState(Vector3 position, float hp, float facing, int attacks, int castleLevel)
+        {
+            if (!IsAlive) return;
+            remoteMoving = (position - remoteTarget).sqrMagnitude > 0.0004f;
+            remoteTarget = position;
+            if (facing != 0f) heading = facing;
+
+            while (IsBase && CastleLevel < castleLevel) UpgradeCastle();
+            if (hp < Hp - 0.01f)
+            {
+                // a hit: flash, wobble and squeak like the real thing
+                hitTime = 0f;
+                SetTint(HitTint);
+                rig?.Hit();
+                Sfx.Play(Sound.Bonk, 0.35f, IsBase ? 0.6f : 1f);
+                if (HasVoice && Random.value < 0.3f) Sfx.Play(Sound.Yelp, 0.6f, VoicePitch);
+            }
+            else if (hp > Hp + 0.01f)
+            {
+                hitTime = 0f;
+                SetTint(HealTint);
+            }
+            Hp = Mathf.Clamp(hp, 0.01f, Stats.maxHp); // only the host's "fallen" message ends it
+            UpdateHpBar();
+
+            for (; AttackCount < attacks; AttackCount++)
+            {
+                lungeTime = 0f;
+                rig?.Attack();
+                PlayAttackSound();
+            }
+        }
+
+        /// <summary>Puts a freshly spawned puppet exactly where the host has it.</summary>
+        public void SnapRemote(Vector3 position)
+        {
+            remoteTarget = position;
+            transform.position = position;
+        }
+
+        /// <summary>The host says this unit has fallen: tear it apart here too.</summary>
+        public void RemoteDie()
+        {
+            if (IsAlive) Die();
+        }
+
+        void RemoteTick()
+        {
+            // glide toward the host's position (it arrives ten times a second)
+            var p = Vector3.Lerp(transform.position, remoteTarget, 1f - Mathf.Exp(-Time.deltaTime * 12f));
+            transform.position = p;
+            if (shadow != null) shadow.localPosition = new Vector3(0f, -p.y, 0f);
+            Animate(remoteMoving);
+        }
     }
 
     /// <summary>A torn-off stroke that tumbles, then shrinks away.</summary>
