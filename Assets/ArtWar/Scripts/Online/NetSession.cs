@@ -123,7 +123,13 @@ namespace ArtWar
             if (!AuthenticationService.Instance.IsSignedIn) await AuthenticationService.Instance.SignInAnonymouslyAsync();
         }
 
-        static SessionOptions RoomOptions(bool hidden) => new SessionOptions { MaxPlayers = 2, IsPrivate = hidden }.WithRelayNetwork();
+        // WebSockets (WSS) everywhere: a browser can use nothing else, and players on the web and on desktop must
+        // speak the same protocol to meet in one room.
+        static SessionOptions RoomOptions(bool hidden) => new SessionOptions { MaxPlayers = 2, IsPrivate = hidden }
+            .WithRelayNetwork()
+            .WithNetworkOptions(Wss);
+
+        static NetworkOptions Wss => new NetworkOptions { RelayProtocol = RelayProtocol.WSS };
 
         /// <summary>Opens a private room. Returns its code for the other player to type in.</summary>
         public static async Task<string> CreateRoom()
@@ -140,7 +146,8 @@ namespace ArtWar
         {
             Manager();
             await SignIn();
-            session = await MultiplayerService.Instance.JoinSessionByCodeAsync(code.Trim().ToUpperInvariant());
+            session = await MultiplayerService.Instance.JoinSessionByCodeAsync(code.Trim().ToUpperInvariant(),
+                new JoinSessionOptions().WithNetworkOptions(Wss));
             Register();
         }
 
