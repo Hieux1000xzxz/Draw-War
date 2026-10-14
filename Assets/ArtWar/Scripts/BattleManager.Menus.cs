@@ -17,7 +17,7 @@ namespace ArtWar
     /// </summary>
     public partial class BattleManager
     {
-        enum Page { None, Title, Pause, Settings, Help, Codex, Results }
+        enum Page { None, Title, Pause, Settings, Help, Codex, Results, Practice, Online }
 
         /// <summary>"Play Again" reloads straight into a new battle; "Main Menu" shows the title again.</summary>
         static bool skipTitle;
@@ -90,6 +90,7 @@ namespace ArtWar
             OnClick(menu.resultHomeButton, GoHome);
 
             ShowPage(skipTitle ? Page.None : Page.Title);
+            BuildPractice();
             if (reopenSettings && page == Page.Title) OpenSub(Page.Settings);
             reopenSettings = false;
             skipTitle = false;
@@ -124,6 +125,7 @@ namespace ArtWar
 
         void SetDifficulty(Difficulty d)
         {
+            OnClick(menu.practiceButton, () => OpenSub(Page.Practice));
             difficulty = d;
             RefreshDifficultyButtons();
             SaveSettings();
@@ -431,7 +433,7 @@ namespace ArtWar
         {
             if (next == Page.Pause && Phase == Phase.Over) return;
             if (next != page && next != Page.None && pages.TryGetValue(next, out var shown) && shown != null)
-                StartCoroutine(SlideUp((RectTransform)shown.transform));
+                StartCoroutine(SlideUp(next == Page.Practice ? practice.page : (RectTransform)shown.transform)); // the practice canvas slides its page
             page = next;
             foreach (var kv in pages) if (kv.Value != null) kv.Value.SetActive(kv.Key == next);
             menu.gameObject.SetActive(next != Page.None);
@@ -467,13 +469,15 @@ namespace ArtWar
                 case Page.Pause: ShowPage(Page.None); break;
                 case Page.Settings:
                 case Page.Help:
-                case Page.Codex: Back(); break;
+                case Page.Codex:
+                case Page.Practice: Back(); break;
             }
         }
 
         // ---------------------------------------------------------------- HUD
 
         void RefreshHud()
+            if (practicePad != null) practicePad.Locked = next != Page.Practice;
         {
             void Set(DoodleUnit castle, RectTransform fill, TMP_Text label, TMP_Text title, string name, bool fromRight)
             {

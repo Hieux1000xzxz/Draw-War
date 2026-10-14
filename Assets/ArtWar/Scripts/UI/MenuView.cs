@@ -19,7 +19,7 @@ namespace ArtWar
         public TMP_Text logo;
         public RawImage[] parade = new RawImage[6];
         public Button[] difficultyButtons = new Button[3];
-        public Button playButton, codexButton, helpButton, settingsButton;
+        public Button playButton, versusButton, onlineButton, practiceButton, codexButton, helpButton, settingsButton;
 
         [Header("Pause")]
         public Button resumeButton, pauseHelpButton, pauseSettingsButton, restartButton, homeButton;
@@ -47,6 +47,10 @@ namespace ArtWar
         {
             var go = UiKit.Canvas("Menus", 10);
             var v = go.AddComponent<MenuView>();
+
+        public static readonly Color PracticeGreen = new Color(0.33f, 0.66f, 0.45f);
+        public static readonly Color VersusRed = new Color(0.86f, 0.32f, 0.3f);
+        public static readonly Color OnlinePurple = new Color(0.55f, 0.4f, 0.8f);
 
             var layer = UiKit.Rect(go.transform, "Backdrop", Vector2.zero, Vector2.zero);
             UiKit.Stretch(layer);
@@ -89,10 +93,14 @@ namespace ArtWar
                 v.difficultyButtons[i] = UiKit.Button(sheet, "Difficulty " + en[i], new Vector2(320f + i * 210f, 300f), new Vector2(200f, 70f),
                     UiKit.Muted, 28, vi[i], en[i]);
 
-            v.playButton = UiKit.Button(sheet, "Play", new Vector2(420f, 170f), new Vector2(420f, 110f), UiKit.Primary, 48, "CHƠI", "PLAY");
-            v.codexButton = UiKit.Button(sheet, "Handbook", new Vector2(110f, 45f), new Vector2(330f, 92f), UiKit.Secondary, 30, "Sổ tay quân", "Unit Handbook");
-            v.helpButton = UiKit.Button(sheet, "How To Play", new Vector2(465f, 45f), new Vector2(330f, 92f), UiKit.Secondary, 30, "Hướng dẫn", "How to Play");
-            v.settingsButton = UiKit.Button(sheet, "Settings", new Vector2(820f, 45f), new Vector2(330f, 92f), UiKit.Secondary, 30, "Cài đặt", "Settings");
+            v.playButton = UiKit.Button(sheet, "Play", new Vector2(90f, 170f), new Vector2(340f, 110f), UiKit.Primary, 44, "CHƠI", "PLAY");
+            v.versusButton = UiKit.Button(sheet, "Versus", new Vector2(460f, 170f), new Vector2(340f, 110f), VersusRed, 34, "2 NGƯỜI CHƠI", "2 PLAYERS");
+            v.onlineButton = UiKit.Button(sheet, "Online", new Vector2(830f, 170f), new Vector2(340f, 110f), OnlinePurple, 34, "CHƠI ONLINE", "ONLINE");
+            // bottom row: practice room, unit handbook, how to play, settings
+            v.practiceButton = UiKit.Button(sheet, "Practice", new Vector2(60f, 45f), new Vector2(270f, 92f), PracticeGreen, 28, "Luyện vẽ", "Practice");
+            v.codexButton = UiKit.Button(sheet, "Handbook", new Vector2(350f, 45f), new Vector2(270f, 92f), UiKit.Secondary, 28, "Sổ tay quân", "Unit Handbook");
+            v.helpButton = UiKit.Button(sheet, "How To Play", new Vector2(640f, 45f), new Vector2(270f, 92f), UiKit.Secondary, 28, "Hướng dẫn", "How to Play");
+            v.settingsButton = UiKit.Button(sheet, "Settings", new Vector2(930f, 45f), new Vector2(270f, 92f), UiKit.Secondary, 28, "Cài đặt", "Settings");
         }
 
         static void BuildPause(MenuView v, Transform layer)

@@ -139,6 +139,7 @@ namespace ArtWar.EditorTools
             Save(HudView.Build().gameObject, UiFolder + "/HUD.prefab");
             Save(MenuView.Build().gameObject, UiFolder + "/Menus.prefab");
             Save(CodexCardView.Build().gameObject, UiFolder + "/CodexCard.prefab");
+            Save(PracticeView.Build().gameObject, UiFolder + "/Practice.prefab");
             AssetDatabase.SaveAssets();
         }
 

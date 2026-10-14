@@ -72,6 +72,10 @@ namespace ArtWar
                 case PartType.Cross: return new Color32(120, 235, 190, 255);
                 case PartType.Gun: return new Color32(255, 200, 120, 255);
                 case PartType.Box: return new Color32(185, 205, 235, 255);
+                case PartType.Guard: return new Color32(140, 185, 250, 255);
+                case PartType.Bomb: return new Color32(250, 140, 110, 255);
+                case PartType.Hat: return new Color32(200, 150, 245, 255);
+                case PartType.Coil: return new Color32(190, 225, 110, 255);
                 default: return new Color32(0, 0, 0, 0);
             }
         }
