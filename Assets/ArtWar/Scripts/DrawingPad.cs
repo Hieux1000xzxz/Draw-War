@@ -214,7 +214,8 @@ namespace ArtWar
 
             if (Assist && stroke.points.Count >= 3)
             {
-                var clean = StrokeBeautifier.Beautify(stroke.points);
+                // a copy: for short marks Beautify hands back the very same list, which Clear would empty
+                var clean = new List<Vector2>(StrokeBeautifier.Beautify(stroke.points));
                 stroke.points.Clear();
                 stroke.points.AddRange(clean);
             }
